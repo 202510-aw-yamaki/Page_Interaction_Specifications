@@ -25,12 +25,15 @@ UTF-8、BOMはつけてはいけない。
 ユーザーからの指示に対して、まずは意図確認。勝手に修正しない。
 「まず確認、承諾を得てから着手」を徹底する。
 
-## 各 ファイル の役割
+## 各 ファイル及びフォルダ の役割
 Page_Interaction_Specifications\codex_implementation_spec.md
 はあなたがこのリポジトリ内で作成するプロンプトに当たる
 
 Page_Interaction_Specifications\image
 内の画像は現状の仕上がり見本画像
+
+C:\Users\hiita\src\Page_Interaction_Specifications\Archive
+内のファイル役割を終えた過去の指示プロンプトマークダウン
 
 必要以上に Markdown を増やさないでください。  
 役割が既存文書と重なる場合は、新規作成ではなく既存文書への追記・更新・統合を優先してください。
