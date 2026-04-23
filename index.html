@@ -255,12 +255,42 @@
     .hero-visual {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      padding: 16px;
+      gap: 12px;
+      padding: 12px;
       background: rgba(255, 255, 255, 0.76);
       border: 1px solid #eee6da;
       border-radius: 22px;
       box-shadow: var(--shadow);
+    }
+
+    .hero-shot {
+      margin: 0;
+      min-width: 0;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid #eee0d1;
+      background: #fffaf3;
+      box-shadow: 0 8px 18px rgba(31, 41, 55, 0.08);
+    }
+
+    .hero-shot img {
+      width: 100%;
+      height: 168px;
+      display: block;
+      object-fit: cover;
+      object-position: left top;
+    }
+
+    .hero-shot figcaption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 11px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.88);
     }
 
     .visual-panel {
@@ -826,6 +856,84 @@
       background: #fff;
     }
 
+    .canvas-zoom {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      z-index: 40;
+      width: 210px;
+      margin: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .mode-pill {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      z-index: 40;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      color: #263142;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: var(--shadow-soft);
+      font-size: 12px;
+      font-weight: 900;
+      backdrop-filter: blur(12px);
+    }
+
+    .next-step-list {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .next-step-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      color: #7a8493;
+      background: #f8fafc;
+      border: 1px dashed #d8dee8;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .empty-canvas-guide {
+      position: absolute;
+      z-index: 8;
+      display: grid;
+      gap: 12px;
+      max-width: 430px;
+      padding: 22px;
+      color: #4b5563;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #ffd8bd;
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      pointer-events: none;
+    }
+
+    .empty-canvas-guide h3 {
+      margin: 0;
+      color: var(--orange);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .empty-canvas-guide p {
+      margin: 0;
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
     .zoom-value {
       text-align: center;
       font-weight: 900;
@@ -855,8 +963,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 1440px;
-      height: 840px;
+      width: 1800px;
+      height: 1100px;
       transform-origin: 0 0;
     }
 
@@ -985,8 +1093,8 @@
     .edge-svg {
       position: absolute;
       inset: 0;
-      width: 1440px;
-      height: 840px;
+      width: 1800px;
+      height: 1100px;
       overflow: visible;
       pointer-events: none;
       z-index: 4;
@@ -1296,6 +1404,80 @@
       line-height: 1.5;
     }
 
+    .suffix-input {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #e5dfd6;
+      border-radius: 8px;
+    }
+
+    .suffix-input input {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .suffix-input span {
+      align-self: stretch;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      color: #64748b;
+      background: #f8fafc;
+      border-left: 1px solid #e5dfd6;
+      font-weight: 900;
+    }
+
+    .item-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .item-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 100%;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .auto-link-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .auto-link-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      background: #fff;
+      border: 1px solid #e5dfd6;
+      border-radius: 10px;
+    }
+
+    .auto-link-row input {
+      min-width: 0;
+    }
+
+    .auto-link-target {
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
     .field-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1526,6 +1708,17 @@
       gap: 12px;
     }
 
+    .sample-section {
+      margin-bottom: 18px;
+    }
+
+    .sample-section h3 {
+      margin: 0 0 10px;
+      color: #263142;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
     .sample-card {
       display: grid;
       gap: 10px;
@@ -1561,10 +1754,6 @@
         grid-template-columns: 1fr;
       }
 
-      .editor-main {
-        grid-template-columns: 220px minmax(520px, 1fr) 310px;
-      }
-
       .toolbar .btn {
         padding-left: 11px;
         padding-right: 11px;
@@ -1576,11 +1765,26 @@
         overflow: auto;
       }
 
+      html,
+      body,
+      .app {
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      .top-main {
+        padding: 24px 16px;
+      }
+
       .top-shell,
       .editor-shell {
         min-height: 100vh;
         height: auto;
         overflow: visible;
+      }
+
+      .top-shell {
+        grid-template-rows: auto auto auto;
       }
 
       .top-header,
@@ -1589,6 +1793,48 @@
       .status-bar {
         flex-wrap: wrap;
         height: auto;
+      }
+
+      .top-header {
+        align-items: stretch;
+      }
+
+      .top-header .brand {
+        min-width: 0;
+      }
+
+      .top-header .brand-title {
+        font-size: 24px;
+      }
+
+      .top-actions,
+      .toolbar {
+        width: 100%;
+      }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions .btn {
+        width: 100%;
+      }
+
+      .hero h2 {
+        font-size: 32px;
+        overflow-wrap: anywhere;
+      }
+
+      .hero p {
+        font-size: 16px;
+        max-width: 100%;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+      }
+
+      .hero p br {
+        display: none;
       }
 
       .start-cards,
@@ -1602,12 +1848,26 @@
         height: 1100px;
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr auto;
+        padding-right: 12px;
         overflow: visible;
       }
 
       .side-panel,
       .right-panel {
+        position: static;
+        width: auto;
         max-height: 360px;
+      }
+
+      .editor-main::before {
+        content: "この編集画面はPC表示推奨です";
+        display: block;
+        padding: 12px 14px;
+        color: #7c4f10;
+        background: #fff8e8;
+        border: 1px solid #f3d7a8;
+        border-radius: 12px;
+        font-weight: 900;
       }
     }
   </style>
@@ -1619,7 +1879,7 @@
   <script>
     const APP_NAME = "関係図整理ツール";
     const STORAGE_KEY = "relation-map-tool-autosave";
-    const WORKSPACE = { width: 1440, height: 840 };
+    const WORKSPACE = { width: 1800, height: 1100 };
     const STAGE_NAMES = {
       1: "公開ページ整理",
       2: "管理ページ追加",
@@ -1638,38 +1898,50 @@
       save: "保存",
       reference: "参照"
     };
-    const defaultAreas = () => ({
-      publicArea: {
-        id: "publicArea",
-        kind: "publicArea",
-        x: 22,
-        y: 22,
-        width: 690,
-        height: 420,
-        title: "① 公開ページエリア",
-        color: "orange"
+    const areaPresets = {
+      1: {
+        publicArea: { x: 24, y: 24, width: 1280, height: 650 },
+        adminArea: { x: 1326, y: 24, width: 430, height: 300 },
+        dbArea: { x: 1326, y: 348, width: 430, height: 326 }
       },
-      adminArea: {
-        id: "adminArea",
-        kind: "adminArea",
-        x: 736,
-        y: 22,
-        width: 682,
-        height: 420,
-        title: "② 管理ページエリア",
-        color: "blue"
+      2: {
+        publicArea: { x: 24, y: 24, width: 850, height: 650 },
+        adminArea: { x: 900, y: 24, width: 856, height: 650 },
+        dbArea: { x: 24, y: 704, width: 1732, height: 250 }
       },
-      dbArea: {
-        id: "dbArea",
-        kind: "dbArea",
-        x: 22,
-        y: 456,
-        width: 1396,
-        height: 360,
-        title: "③ DB接続エリア",
-        color: "green"
+      3: {
+        publicArea: { x: 24, y: 24, width: 850, height: 460 },
+        adminArea: { x: 900, y: 24, width: 856, height: 460 },
+        dbArea: { x: 24, y: 512, width: 1732, height: 430 }
       }
-    });
+    };
+
+    const defaultAreas = (stage = 1) => {
+      const preset = areaPresets[Math.min(3, Math.max(1, Number(stage) || 1))];
+      return {
+        publicArea: {
+          id: "publicArea",
+          kind: "publicArea",
+          ...preset.publicArea,
+          title: "① 公開ページエリア",
+          color: "orange"
+        },
+        adminArea: {
+          id: "adminArea",
+          kind: "adminArea",
+          ...preset.adminArea,
+          title: "② 管理ページエリア",
+          color: "blue"
+        },
+        dbArea: {
+          id: "dbArea",
+          kind: "dbArea",
+          ...preset.dbArea,
+          title: "③ DB接続エリア",
+          color: "green"
+        }
+      };
+    };
 
     const promptTemplates = {
       step1Scaffold: `以下は「関係図整理ツール」から出力した STEP1（公開ページ整理）の構造情報です。
@@ -1873,7 +2145,7 @@
     const queryStage = Number(new URLSearchParams(location.search).get("stage"));
     const hashStage = Number((location.hash.match(/stage=(\d)/) || [])[1]);
     const initialStage = queryStage || hashStage;
-    let state = createSampleData(initialStage >= 1 && initialStage <= 3 ? initialStage : 1, "corporate");
+    let state = createStarterData(initialStage >= 1 && initialStage <= 3 ? initialStage : 1);
     state.screen = initialStage >= 1 && initialStage <= 3 ? "editor" : "top";
     let historyStack = [];
     let futureStack = [];
@@ -1882,6 +2154,8 @@
     let dragState = null;
     let currentModal = null;
     let lastGeneratedPrompt = "";
+    let hasUnsavedChanges = false;
+    let spacePressed = false;
 
     const app = document.getElementById("app");
     const fileInput = document.getElementById("fileInput");
@@ -1943,7 +2217,7 @@
         zoom: 1,
         panX: 0,
         panY: 0,
-        areas: defaultAreas(),
+        areas: defaultAreas(stage),
         nodes: [],
         edges: [],
         selectedId: null,
@@ -1976,7 +2250,7 @@
         zoom: Number(input.zoom) || 1,
         panX: Number(input.panX) || 0,
         panY: Number(input.panY) || 0,
-        areas: { ...defaultAreas(), ...(input.areas || {}) },
+        areas: { ...defaultAreas(input.stage), ...(input.areas || {}) },
         nodes: Array.isArray(input.nodes) ? input.nodes.map(normalizeNode) : [],
         edges: Array.isArray(input.edges) ? input.edges.map(normalizeEdge) : [],
         meta: {
@@ -2058,6 +2332,12 @@
       }
       if (historyStack.length > 80) historyStack.shift();
       futureStack = [];
+      hasUnsavedChanges = true;
+    }
+
+    function confirmIfDirty(message = "未保存の変更があります。このまま続けますか？") {
+      if (!hasUnsavedChanges) return true;
+      return window.confirm(message);
     }
 
     function stripRuntimeState(value) {
@@ -2116,6 +2396,7 @@
     }
 
     function linesToItems(value, kind) {
+      const extension = kind === "css" ? ".css" : kind === "js" ? ".js" : "";
       return String(value || "")
         .split(/\r?\n/)
         .map((line) => line.trim())
@@ -2123,11 +2404,12 @@
         .map((line) => {
           const parts = line.split("|").map((part) => part.trim());
           if (kind === "field") return parts[0];
+          const fileName = extension ? ensureExtension(parts[0] || "", extension) : (parts[0] || "");
           return {
             id: uid(kind),
             kind,
-            fileName: parts[0] || "",
-            label: parts[1] || parts[0] || "",
+            fileName,
+            label: parts[1] || fileName || "",
             role: parts[2] || "",
             scope: parts[3] === "specific" ? "specific" : "common"
           };
@@ -2139,6 +2421,21 @@
         if (typeof item === "string") return item;
         return [item.fileName, item.label, item.role, item.scope].filter(Boolean).join(" | ");
       }).join("\n");
+    }
+
+    function stripKnownExtension(value, extension) {
+      const text = String(value || "").trim();
+      return text.toLowerCase().endsWith(extension) ? text.slice(0, -extension.length) : text;
+    }
+
+    function ensureExtension(value, extension) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      return text.toLowerCase().endsWith(extension) ? text : `${text}${extension}`;
+    }
+
+    function itemsToSimpleLines(items, extension) {
+      return (items || []).map((item) => stripKnownExtension(typeof item === "string" ? item : item.fileName, extension)).join("\n");
     }
 
     function linkHintsToLines(hints) {
@@ -2258,9 +2555,9 @@
                 <p>サイトの整理を、公開ページから管理ページ、データベース接続まで<br>3つのステップで段階的に進められます。</p>
               </div>
               <div class="hero-visual">
-                ${renderMiniVisual("orange", "公開ページ", "globe")}
-                ${renderMiniVisual("blue", "管理ページ", "lock")}
-                ${renderMiniVisual("green", "DB接続", "db")}
+                ${renderHeroShot(1, "公開ページ整理", "image/hero_STEP1_image.png")}
+                ${renderHeroShot(2, "管理ページ追加", "image/hero_STEP2_image.png")}
+                ${renderHeroShot(3, "DB接続整理", "image/hero_STEP3_image.png")}
               </div>
             </section>
             <section class="start-cards">
@@ -2286,7 +2583,7 @@
           </main>
           <footer class="top-footer">
             <span>データはブラウザ内で編集できます。外部へ送信されることはありません。</span>
-            <span>ローカル単体HTML</span>
+            <span>©2026 Yobibit</span>
           </footer>
         </div>
       `;
@@ -2307,6 +2604,18 @@
             <span class="mini-box c"></span>
           </div>
         </div>
+      `;
+    }
+
+    function renderHeroShot(step, title, src) {
+      return `
+        <figure class="hero-shot">
+          <img src="${src}" alt="STEP${step} ${title}のイメージ" onerror="this.style.display='none'; this.nextElementSibling.dataset.missing='true';">
+          <figcaption>
+            <span>STEP${step}</span>
+            <span>${title}</span>
+          </figcaption>
+        </figure>
       `;
     }
 
@@ -2341,15 +2650,16 @@
       app.querySelectorAll("[data-action='start-stage']").forEach((button) => {
         button.addEventListener("click", () => {
           const stage = Number(button.dataset.stage);
-          pushHistory();
-          state = createSampleData(stage, "corporate");
+          if (!confirmIfDirty("未保存の変更があります。この段階から開始してもよいですか？")) return;
+          state = createStarterData(stage);
           state.screen = "editor";
           historyStack = [];
           futureStack = [];
+          hasUnsavedChanges = false;
           render();
         });
       });
-      app.querySelector("[data-action='load-json']").addEventListener("click", () => fileInput.click());
+      app.querySelector("[data-action='load-json']").addEventListener("click", openJsonFile);
       app.querySelector("[data-action='open-samples']").addEventListener("click", openSamplesModal);
       app.querySelector("[data-action='open-help']").addEventListener("click", openHelpModal);
     }
@@ -2367,9 +2677,14 @@
             <nav class="toolbar" aria-label="操作バー">
               <div class="toolbar-group">
                 <button class="btn" data-action="new">${iconHtml("plus")}新規作成</button>
-                <button class="btn" data-action="save-json">${iconHtml("save")}保存</button>
-                <button class="btn" data-action="load-json">${iconHtml("folder")}読み込み</button>
-                <button class="btn" data-action="export-json">${iconHtml("upload")}書き出し</button>
+                <button class="btn" data-action="save-json">${iconHtml("save")}作業データを保存</button>
+                <button class="btn" data-action="load-json">${iconHtml("folder")}作業データを開く</button>
+                <button class="btn" data-action="export-menu">${iconHtml("upload")}外部用に出力</button>
+              </div>
+              <div class="toolbar-group">
+                <button class="btn" data-action="go-top">TOPへ戻る</button>
+                <button class="btn" data-action="prev-step" ${state.stage <= 1 ? "disabled" : ""}>前のSTEPへ</button>
+                <button class="btn" data-action="next-step" ${state.stage >= 3 ? "disabled" : ""}>次のSTEPへ</button>
               </div>
               <div class="toolbar-group">
                 <button class="btn" data-action="undo">Undo</button>
@@ -2427,12 +2742,15 @@
             <p class="panel-caption">ボタンで追加、または「ドラッグ作成」を選んでキャンバス上に箱を描けます。</p>
             <div class="tool-list">
               <button class="tool-btn orange" data-action="add-node" data-kind="publicPage">${iconHtml("page")}公開ページを追加</button>
-              <button class="tool-btn blue" data-action="add-node" data-kind="adminPage" ${canAdmin ? "" : "disabled"}>${iconHtml("lock")}管理ページを追加</button>
               <button class="tool-btn orange" data-action="add-node" data-kind="modal">${iconHtml("modal")}モーダル / ポップアップを追加</button>
-              <button class="tool-btn green" data-action="add-node" data-kind="saveData" ${canDb ? "" : "disabled"}>${iconHtml("db")}保存データ項目を追加</button>
-              <button class="tool-btn green" data-action="add-node" data-kind="referenceData" ${canDb ? "" : "disabled"}>${iconHtml("db")}参照データ項目を追加</button>
+              ${canAdmin ? `<button class="tool-btn blue" data-action="add-node" data-kind="adminPage">${iconHtml("lock")}管理ページを追加</button>` : ""}
+              ${canDb ? `
+                <button class="tool-btn green" data-action="add-node" data-kind="saveData">${iconHtml("db")}保存データ項目を追加</button>
+                <button class="tool-btn green" data-action="add-node" data-kind="referenceData">${iconHtml("db")}参照データ項目を追加</button>
+              ` : ""}
               <button class="tool-btn purple ${state.connectMode ? "active" : ""}" data-action="toggle-connect">${iconHtml("link")}接続線を追加</button>
             </div>
+            ${renderUpcomingTools(canAdmin, canDb)}
             <div class="field">
               <label>接続線の種別</label>
               <select data-action="connection-type">
@@ -2478,13 +2796,36 @@
       `;
     }
 
+    function renderUpcomingTools(canAdmin, canDb) {
+      const items = [];
+      if (!canAdmin) items.push(`${iconHtml("lock")}管理ページ追加はSTEP2で使えます`);
+      if (!canDb) items.push(`${iconHtml("db")}DB項目追加はSTEP3で使えます`);
+      if (!items.length) return "";
+      return `
+        <div class="tool-card">
+          <h3>次のSTEPで使えます</h3>
+          <div class="next-step-list">
+            ${items.map((item) => `<div class="next-step-chip">${item}</div>`).join("")}
+          </div>
+        </div>
+      `;
+    }
+
     function renderCanvas() {
       return `
         <section class="canvas-panel">
           <div class="canvas-viewport ${state.panTool ? "panning" : ""}" data-canvas>
+            <div class="mode-pill">${iconHtml(currentToolIcon())}${currentToolLabel()}</div>
+            <div class="zoom-box canvas-zoom">
+              <button class="btn small icon-only" data-action="zoom-out">${iconHtml("zoomOut")}</button>
+              <button class="btn small" data-action="zoom-reset"><span class="zoom-value">${Math.round(state.zoom * 100)}%</span></button>
+              <button class="btn small icon-only" data-action="zoom-in">${iconHtml("zoomIn")}</button>
+              <button class="btn small icon-only ${state.panTool ? "ghost-blue" : ""}" data-action="toggle-pan">${iconHtml("hand")}</button>
+            </div>
             <div class="workspace" style="transform: translate(${state.panX}px, ${state.panY}px) scale(${state.zoom});">
               ${renderAreas()}
               ${renderDbGroups()}
+              ${renderEmptyCanvasGuide()}
               ${renderDividers()}
               <svg class="edge-svg" data-edge-svg viewBox="0 0 ${WORKSPACE.width} ${WORKSPACE.height}">
                 <defs>
@@ -2503,6 +2844,32 @@
             </div>
           </div>
         </section>
+      `;
+    }
+
+    function currentToolIcon() {
+      if (state.connectMode) return "link";
+      if (state.panTool) return "hand";
+      if (state.drawKind) return "plus";
+      return "page";
+    }
+
+    function currentToolLabel() {
+      if (state.connectMode) return "接続ツール: 始点と終点をクリック";
+      if (state.panTool) return "手のひらツール";
+      if (state.drawKind) return `ドラッグ作成: ${KIND_LABELS[state.drawKind]}`;
+      return "選択ツール";
+    }
+
+    function renderEmptyCanvasGuide() {
+      if (state.stage !== 1 || getVisibleNodes().length) return "";
+      const area = state.areas.publicArea;
+      return `
+        <div class="empty-canvas-guide" style="left:${area.x + 72}px; top:${area.y + 130}px;">
+          <h3>まずは「公開ページを追加」から始めます</h3>
+          <p>ページを追加したら、必要に応じてモーダルや接続線を追加してください。</p>
+          <p>公開ページの整理ができたら、右上の「次のSTEPへ」から管理ページ整理へ進めます。</p>
+        </div>
       `;
     }
 
@@ -2714,7 +3081,10 @@
           ` : `
             <div class="field">
               <label>htmlファイル名</label>
-              <input data-field="htmlFile" value="${escapeHtml(node.htmlFile)}" placeholder="例）index.html">
+              <div class="suffix-input">
+                <input data-field="htmlFileBase" value="${escapeHtml(stripKnownExtension(node.htmlFile, ".html"))}" placeholder="例）index または admin/edit">
+                <span>.html</span>
+              </div>
             </div>
             <div class="field">
               <label>タイトル（title）</label>
@@ -2737,10 +3107,7 @@
         </div>
         <div class="form-section">
           <h3 class="form-title">${iconHtml("link")}リンク導線一覧</h3>
-          <div class="field">
-            <label>このページからのリンクや遷移先</label>
-            <textarea data-field="linkHints" data-format="linkHints" placeholder="例）一覧へ -> node_id">${escapeHtml(linkHintsToLines(node.linkHints))}</textarea>
-          </div>
+          ${renderAutoLinkList(node)}
         </div>
         ${isDb ? `
           <div class="form-section">
@@ -2753,16 +3120,18 @@
         ` : `
           <div class="form-section">
             <h3 class="form-title">${iconHtml("table")}CSS一覧</h3>
+            ${renderAssetChips(node.cssItems, ".css")}
             <div class="field">
-              <label>CSS（file | label | role | common/specific）</label>
-              <textarea data-field="cssItems" data-format="css">${escapeHtml(itemsToLines(node.cssItems))}</textarea>
+              <label>CSSファイル（1行に1つ、拡張子なしでも可）</label>
+              <textarea data-field="cssItems" data-format="css">${escapeHtml(itemsToSimpleLines(node.cssItems, ".css"))}</textarea>
             </div>
           </div>
           <div class="form-section">
             <h3 class="form-title">${iconHtml("table")}JS一覧</h3>
+            ${renderAssetChips(node.jsItems, ".js")}
             <div class="field">
-              <label>JS（file | label | role | common/specific）</label>
-              <textarea data-field="jsItems" data-format="js">${escapeHtml(itemsToLines(node.jsItems))}</textarea>
+              <label>JSファイル（1行に1つ、拡張子なしでも可）</label>
+              <textarea data-field="jsItems" data-format="js">${escapeHtml(itemsToSimpleLines(node.jsItems, ".js"))}</textarea>
             </div>
           </div>
         `}
@@ -2776,6 +3145,35 @@
             <button class="btn small" data-action="duplicate-selected">${iconHtml("copy")}複製</button>
             <button class="btn small" data-action="delete-selected">${iconHtml("trash")}削除</button>
           </div>
+        </div>
+      `;
+    }
+
+    function renderAssetChips(items, extension) {
+      if (!items?.length) return `<div class="item-chip-list"><span class="item-chip">未登録</span></div>`;
+      return `
+        <div class="item-chip-list">
+          ${items.map((item) => `<span class="item-chip">${escapeHtml(stripKnownExtension(item.fileName, extension))}<small>${extension}</small></span>`).join("")}
+        </div>
+      `;
+    }
+
+    function renderAutoLinkList(node) {
+      const links = state.edges.filter((edge) => edge.fromId === node.id && edge.relationType === "navigate");
+      if (!links.length) {
+        return `<div class="empty-guide">接続線を追加すると、この一覧に自動反映されます。</div>`;
+      }
+      return `
+        <div class="auto-link-list">
+          ${links.map((edge) => {
+            const toNode = getNode(edge.toId);
+            return `
+              <div class="auto-link-row">
+                <input data-link-edge-id="${edge.id}" value="${escapeHtml(edge.label || "")}" placeholder="リンク名">
+                <span class="auto-link-target">→ ${escapeHtml(toNode?.name || edge.toId)}</span>
+              </div>
+            `;
+          }).join("")}
         </div>
       `;
     }
@@ -2919,6 +3317,10 @@
         field.addEventListener("change", () => updateSelectedEdgeFromField(field));
       });
 
+      app.querySelectorAll("[data-link-edge-id]").forEach((field) => {
+        field.addEventListener("change", () => updateLinkLabel(field));
+      });
+
       app.querySelectorAll("[data-node-id]").forEach((nodeEl) => {
         nodeEl.addEventListener("pointerdown", startNodePointer);
         nodeEl.addEventListener("click", (event) => {
@@ -2943,11 +3345,13 @@
     function handleAction(event, action, el) {
       event.preventDefault();
       const handlers = {
-        "go-top": () => { state.screen = "top"; render(); },
+        "go-top": () => goTop(),
         "new": () => newDocument(),
         "save-json": () => saveJson(),
-        "export-json": () => saveJson(),
-        "load-json": () => fileInput.click(),
+        "export-menu": () => openExportModal(),
+        "load-json": () => openJsonFile(),
+        "prev-step": () => goToStage(state.stage - 1),
+        "next-step": () => goToStage(state.stage + 1),
         "undo": () => undo(),
         "redo": () => redo(),
         "auto-arrange": () => autoArrange(),
@@ -2975,12 +3379,46 @@
     }
 
     function newDocument() {
-      if (!window.confirm("現在の内容を閉じて、新規作成しますか？保存していない内容は失われます。")) return;
+      if (!confirmIfDirty("未保存の変更があります。現在の内容を閉じて新規作成しますか？")) return;
       historyStack = [];
       futureStack = [];
       state = createBaseState(state.stage);
       state.projectName = "新規プロジェクト";
+      hasUnsavedChanges = false;
       render();
+    }
+
+    function goTop() {
+      if (!confirmIfDirty("未保存の変更があります。TOPへ戻ってもよいですか？")) return;
+      state.screen = "top";
+      render();
+    }
+
+    function goToStage(targetStage) {
+      if (targetStage < 1 || targetStage > 3 || targetStage === state.stage) return;
+      const warnings = getWarnings();
+      const message = [
+        `このままSTEP${targetStage}へ進みますか？`,
+        hasUnsavedChanges ? "未保存の変更があります。" : "",
+        warnings.length ? "不足項目がありますが、このまま進むこともできます。" : ""
+      ].filter(Boolean).join("\n");
+      if (!window.confirm(message)) return;
+      pushHistory();
+      state.stage = targetStage;
+      state.areas = defaultAreas(targetStage);
+      state.nodes.forEach((node) => {
+        if (node.kind === "adminPage" && targetStage < 2) node.stageVisibleFrom = 2;
+        if ((node.kind === "saveData" || node.kind === "referenceData") && targetStage < 3) node.stageVisibleFrom = 3;
+      });
+      autoArrange(false);
+      state.selectedId = null;
+      state.selectedEdgeId = null;
+      render();
+    }
+
+    function openJsonFile() {
+      if (!confirmIfDirty("未保存の変更があります。別の作業データを開いてもよいですか？")) return;
+      fileInput.click();
     }
 
     function setViewMode(mode) {
@@ -2990,9 +3428,17 @@
     }
 
     function setAiMode(mode) {
+      const scrollEl = app.querySelector(".right-panel .panel-scroll");
+      const scrollTop = scrollEl?.scrollTop || 0;
       state.aiMode = mode;
       const rightPanel = app.querySelector(".right-panel");
-      if (rightPanel) render();
+      if (rightPanel) {
+        render();
+        requestAnimationFrame(() => {
+          const nextScrollEl = app.querySelector(".right-panel .panel-scroll");
+          if (nextScrollEl) nextScrollEl.scrollTop = scrollTop;
+        });
+      }
     }
 
     function toggleConnectMode() {
@@ -3061,6 +3507,7 @@
         description: ""
       });
       state.connectFromId = null;
+      state.connectMode = false;
       state.selectedId = null;
       state.selectedEdgeId = state.edges[state.edges.length - 1].id;
       render();
@@ -3106,14 +3553,19 @@
     }
 
     function nextNodePosition(area, count, kind) {
-      const col = (count - 1) % 3;
-      const row = Math.floor((count - 1) / 3);
       const db = kind === "saveData" || kind === "referenceData";
+      const nodeWidth = db ? 170 : 238;
+      const nodeHeight = db ? 150 : 126;
+      const gapX = db ? 186 : 258;
+      const gapY = db ? 166 : 148;
+      const availableCols = Math.max(1, Math.floor((area.width - 120) / gapX));
+      const col = (count - 1) % availableCols;
+      const row = Math.floor((count - 1) / availableCols);
       return {
-        x: area.x + 70 + col * (db ? 185 : 255),
-        y: area.y + 100 + row * (db ? 172 : 148),
-        width: db ? 170 : 238,
-        height: db ? 150 : 126
+        x: clamp(area.x + 58 + col * gapX, area.x + 24, area.x + area.width - nodeWidth - 24),
+        y: clamp(area.y + 96 + row * gapY, area.y + 76, area.y + area.height - nodeHeight - 24),
+        width: nodeWidth,
+        height: nodeHeight
       };
     }
 
@@ -3177,6 +3629,7 @@
       else if (format === "js") node[key] = linesToItems(field.value, "js");
       else if (format === "linkHints") node[key] = linesToLinkHints(field.value);
       else if (format === "field") node[key] = linesToItems(field.value, "field");
+      else if (key === "htmlFileBase") node.htmlFile = ensureExtension(field.value, ".html");
       else {
         node[key] = field.value;
         if (key === "kind") {
@@ -3184,6 +3637,15 @@
           node.stageVisibleFrom = defaultStageForKind(field.value);
         }
       }
+      state.meta.updatedAt = new Date().toISOString();
+      render();
+    }
+
+    function updateLinkLabel(field) {
+      const edge = state.edges.find((item) => item.id === field.dataset.linkEdgeId);
+      if (!edge) return;
+      pushHistory();
+      edge.label = field.value;
       state.meta.updatedAt = new Date().toISOString();
       render();
     }
@@ -3324,7 +3786,7 @@
         window.addEventListener("pointerup", endPointerAction, { once: true });
         return;
       }
-      if (state.panTool || event.buttons === 1 && event.shiftKey) {
+      if (state.panTool || spacePressed || event.buttons === 1 && event.shiftKey) {
         dragState = {
           type: "pan",
           startX: event.clientX,
@@ -3474,19 +3936,22 @@
       return Math.min(max, Math.max(min, value));
     }
 
-    function autoArrange() {
-      pushHistory();
+    function autoArrange(saveHistory = true) {
+      if (saveHistory) pushHistory();
       const areas = state.areas;
       const arrangePageArea = (areaKind) => {
         const area = areas[areaKind];
         const nodes = state.nodes.filter((node) => node.areaKind === areaKind && (node.stageVisibleFrom || 1) <= state.stage);
+        const gapX = 258;
+        const gapY = 148;
+        const cols = Math.max(1, Math.floor((area.width - 120) / gapX));
         nodes.forEach((node, index) => {
-          const col = index % 3;
-          const row = Math.floor(index / 3);
-          node.x = area.x + 58 + col * 255;
-          node.y = area.y + 88 + row * 148;
+          const col = index % cols;
+          const row = Math.floor(index / cols);
           node.width = 238;
           node.height = node.kind === "modal" || node.kind === "popup" ? 122 : 128;
+          node.x = clamp(area.x + 58 + col * gapX, area.x + 24, area.x + area.width - node.width - 24);
+          node.y = clamp(area.y + 88 + row * gapY, area.y + 76, area.y + area.height - node.height - 24);
         });
       };
       arrangePageArea("publicArea");
@@ -3495,21 +3960,25 @@
         const dbArea = areas.dbArea;
         const saveNodes = state.nodes.filter((node) => node.kind === "saveData" && (node.stageVisibleFrom || 1) <= state.stage);
         const referenceNodes = state.nodes.filter((node) => node.kind === "referenceData" && (node.stageVisibleFrom || 1) <= state.stage);
+        const dbGap = 178;
+        const half = dbArea.width / 2;
         saveNodes.forEach((node, index) => {
-          node.x = dbArea.x + 58 + index * 178;
-          node.y = dbArea.y + 170;
           node.width = 162;
           node.height = 174;
+          node.x = clamp(dbArea.x + 58 + index * dbGap, dbArea.x + 24, dbArea.x + half - node.width - 24);
+          node.y = clamp(dbArea.y + 170, dbArea.y + 96, dbArea.y + dbArea.height - node.height - 24);
         });
         referenceNodes.forEach((node, index) => {
-          node.x = dbArea.x + dbArea.width / 2 + 58 + index * 178;
-          node.y = dbArea.y + 170;
           node.width = 162;
           node.height = 174;
+          node.x = clamp(dbArea.x + half + 58 + index * dbGap, dbArea.x + half + 24, dbArea.x + dbArea.width - node.width - 24);
+          node.y = clamp(dbArea.y + 170, dbArea.y + 96, dbArea.y + dbArea.height - node.height - 24);
         });
       }
-      render();
-      showToast("全体を整列しました。");
+      if (saveHistory) {
+        render();
+        showToast("全体を整列しました。");
+      }
     }
 
     function canvasPoint(event) {
@@ -3564,7 +4033,8 @@
       } catch (error) {
         // localStorage may be unavailable in restricted local contexts.
       }
-      showToast("JSONを書き出しました。");
+      hasUnsavedChanges = false;
+      showToast("作業データを保存しました。");
     }
 
     function downloadText(fileName, text, type = "text/plain") {
@@ -3592,6 +4062,9 @@
         pushHistory();
         state = normalizeState(parsed);
         state.screen = "editor";
+        historyStack = [];
+        futureStack = [];
+        hasUnsavedChanges = false;
         render();
         showToast("保存データを読み込みました。");
       } catch (error) {
@@ -3599,6 +4072,12 @@
       } finally {
         fileInput.value = "";
       }
+    });
+
+    window.addEventListener("beforeunload", (event) => {
+      if (!hasUnsavedChanges) return;
+      event.preventDefault();
+      event.returnValue = "";
     });
 
     function generatePrompt() {
@@ -3724,40 +4203,98 @@
           <li>Ctrl / Cmd + O: 読み込み</li>
           <li>Ctrl / Cmd + Z: Undo</li>
           <li>Ctrl / Cmd + Shift + Z: Redo</li>
+          <li>Ctrl / Cmd + Y: Redo</li>
+          <li>H: 手のひらツール</li>
+          <li>V: 選択ツール</li>
+          <li>C: 接続ツール</li>
+          <li>Space + Drag: 一時的な手のひら移動</li>
           <li>Delete: 選択中削除</li>
           <li>Escape: 接続モード解除</li>
         </ul>
       `);
     }
 
-    function openSamplesModal() {
-      openModal("サンプルから始める", `
+    function openExportModal() {
+      openModal("外部用に出力", `
         <div class="sample-grid">
-          <button class="sample-card" data-sample="corporate">
-            <h3>コーポレートサイト</h3>
-            <p>トップ、一覧、詳細、問い合わせ、管理、DB接続まで揃った標準サンプルです。</p>
+          <button class="sample-card" data-export-kind="json">
+            <h3>JSONで出力</h3>
+            <p>このツールで再読み込みできる作業データを出力します。</p>
           </button>
-          <button class="sample-card" data-sample="article">
-            <h3>記事一覧 + 詳細 + 問い合わせ</h3>
-            <p>公開ページ中心に記事導線と問い合わせ導線を整理したサンプルです。</p>
+          <button class="sample-card" data-export-kind="consult">
+            <h3>AI相談用テキストを出力</h3>
+            <p>現在の状態をAIに相談するためのプロンプトとして出力します。</p>
           </button>
-          <button class="sample-card" data-sample="cms">
-            <h3>お知らせ更新付き簡易CMS</h3>
-            <p>お知らせの更新・公開管理・参照データを含むサンプルです。</p>
+          <button class="sample-card" data-export-kind="scaffold">
+            <h3>AIひな形用プロンプトを出力</h3>
+            <p>AIに次の構成案JSONを作ってもらうためのプロンプトです。</p>
+          </button>
+          <button class="sample-card" data-export-kind="final">
+            <h3>完成品プロンプトを出力</h3>
+            <p>実装方針や仕様書作成へ渡すための完成品向けプロンプトです。</p>
           </button>
         </div>
       `, (modal) => {
+        modal.querySelectorAll("[data-export-kind]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const kind = button.dataset.exportKind;
+            if (kind === "json") {
+              closeModal();
+              saveJson();
+              return;
+            }
+            state.aiMode = kind === "consult" ? "consult" : kind === "scaffold" ? "scaffold" : "final";
+            const template = selectPromptTemplate(state.aiMode);
+            const prompt = template
+              .replaceAll("{{SERIALIZED_STATE}}", serializeForAi())
+              .replaceAll("{{USER_INPUT}}", state.aiInput || "未入力");
+            downloadText(`${safeFileName(state.projectName || "ai-prompt")}-${kind}.txt`, prompt, "text/plain");
+            closeModal();
+            showToast("外部用テキストを出力しました。");
+          });
+        });
+      });
+    }
+
+    function openSamplesModal() {
+      const samples = [
+        ["corporate", "コーポレートサイト", "会社サイトの基本構成を段階別に確認できます。"],
+        ["article", "記事一覧サイト", "記事一覧、詳細、問い合わせを中心に整理します。"],
+        ["cms", "お知らせ更新付き簡易CMS", "お知らせ更新の管理導線まで含めて整理します。"]
+      ];
+      openModal("サンプルから始める", samples.map(([key, title, text]) => `
+        <section class="sample-section">
+          <h3>${title}</h3>
+          <div class="sample-grid">
+            ${[1, 2, 3].map((step) => `
+              <button class="sample-card" data-sample="${key}" data-stage="${step}">
+                <h3>STEP${step}から始める</h3>
+                <p>${text}<br>${sampleStepDescription(step)}</p>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+      `).join(""), (modal) => {
         modal.querySelectorAll("[data-sample]").forEach((button) => {
           button.addEventListener("click", () => {
-            state = createSampleData(3, button.dataset.sample);
+            if (!confirmIfDirty("未保存の変更があります。サンプルを読み込んでもよいですか？")) return;
+            const stage = Number(button.dataset.stage);
+            state = createSampleStageData(stage, button.dataset.sample);
             historyStack = [];
             futureStack = [];
+            hasUnsavedChanges = false;
             closeModal();
             render();
             showToast("サンプルを読み込みました。");
           });
         });
       });
+    }
+
+    function sampleStepDescription(step) {
+      if (step === 1) return "公開ページを見本にしながら整理できます。";
+      if (step === 2) return "公開ページが入った状態で管理ページ作成に進めます。";
+      return "公開・管理ページが入った状態でDB整理に進めます。";
     }
 
     function openModal(title, body, afterRender) {
@@ -3810,10 +4347,10 @@
       e(detail, contact, "navigate", "問い合わせ");
 
       if (stage >= 2) {
-        const adminTop = n(pageNode("node_admin_top", "adminPage", "adminArea", "管理トップ", "admin/index.html", "管理画面のダッシュボードです。", 890, 78, ["admin.css"], ["admin.js"], 2));
-        const adminList = n(pageNode("node_admin_list", "adminPage", "adminArea", "一覧管理ページ", "admin/list.html", "データの一覧・検索・絞り込みを行います。", 792, 236, ["admin.css"], ["list-admin.js"], 2));
-        const adminEdit = n(pageNode("node_admin_edit", "adminPage", "adminArea", "編集ページ", "admin/edit.html", "データの新規作成・編集を行うページです。", 1104, 236, ["admin.css", "edit.css"], ["edit.js", "common.js"], 2));
-        const editModal = n(pageNode("node_edit_modal", "modal", "adminArea", "編集モーダル", "admin/edit-modal.html", "編集フォームをモーダルで表示します。", 822, 358, ["admin.css", "modal.css"], ["modal.js"], 2, adminEdit));
+        const adminTop = n(pageNode("node_admin_top", "adminPage", "adminArea", "管理トップ", "admin/index.html", "管理画面のダッシュボードです。", 1040, 96, ["admin.css"], ["admin.js"], 2));
+        const adminList = n(pageNode("node_admin_list", "adminPage", "adminArea", "一覧管理ページ", "admin/list.html", "データの一覧・検索・絞り込みを行います。", 940, 254, ["admin.css"], ["list-admin.js"], 2));
+        const adminEdit = n(pageNode("node_admin_edit", "adminPage", "adminArea", "編集ページ", "admin/edit.html", "データの新規作成・編集を行うページです。", 1240, 254, ["admin.css", "edit.css"], ["edit.js", "common.js"], 2));
+        const editModal = n(pageNode("node_edit_modal", "modal", "adminArea", "編集モーダル", "admin/edit-modal.html", "編集フォームをモーダルで表示します。", 1040, 410, ["admin.css", "modal.css"], ["modal.js"], 2, adminEdit));
         e(adminTop, adminList, "navigate", "一覧管理へ");
         e(adminTop, adminEdit, "navigate", "新規作成へ");
         e(adminList, adminEdit, "navigate", "編集へ");
@@ -3848,13 +4385,58 @@
 
       if (type === "cms") {
         sample.projectName = "お知らせ更新付き簡易CMS";
-        if (stage < 2) sample.stage = 2;
-        const newsAdmin = n(pageNode("node_news_admin", "adminPage", "adminArea", "お知らせ更新", "admin/news.html", "お知らせの作成・更新を行います。", 1010, 360, ["admin.css"], ["news-admin.js"], 2));
-        e("node_admin_top", newsAdmin, "navigate", "お知らせ更新へ");
+        if (stage >= 2) {
+          const newsAdmin = n(pageNode("node_news_admin", "adminPage", "adminArea", "お知らせ更新", "admin/news.html", "お知らせの作成・更新を行います。", 1340, 410, ["admin.css"], ["news-admin.js"], 2));
+          e("node_admin_top", newsAdmin, "navigate", "お知らせ更新へ");
+        }
       }
 
       sample.nodes = nodes.filter((node) => (node.stageVisibleFrom || 1) <= stage);
       sample.edges = edges.filter((edge) => sample.nodes.some((node) => node.id === edge.fromId) && sample.nodes.some((node) => node.id === edge.toId));
+      return normalizeState(sample);
+    }
+
+    function createStarterData(stage = 1) {
+      if (stage === 1) {
+        const blank = createBaseState(1);
+        blank.projectName = "新規プロジェクト";
+        blank.screen = "editor";
+        blank.nodes = [];
+        blank.edges = [];
+        return normalizeState(blank);
+      }
+      if (stage === 2) {
+        const starter = createSampleData(1, "corporate");
+        starter.stage = 2;
+        starter.areas = defaultAreas(2);
+        starter.screen = "editor";
+        starter.projectName = "公開ページ整理済みプロジェクト";
+        return normalizeState(starter);
+      }
+      const starter = createSampleData(2, "corporate");
+      starter.stage = 3;
+      starter.areas = defaultAreas(3);
+      starter.screen = "editor";
+      starter.projectName = "公開・管理ページ整理済みプロジェクト";
+      return normalizeState(starter);
+    }
+
+    function createSampleStageData(stage = 1, type = "corporate") {
+      if (stage === 1) {
+        const sample = createSampleData(1, type);
+        sample.stage = 1;
+        sample.areas = defaultAreas(1);
+        return normalizeState(sample);
+      }
+      if (stage === 2) {
+        const sample = createSampleData(1, type);
+        sample.stage = 2;
+        sample.areas = defaultAreas(2);
+        return normalizeState(sample);
+      }
+      const sample = createSampleData(2, type);
+      sample.stage = 3;
+      sample.areas = defaultAreas(3);
       return normalizeState(sample);
     }
 
@@ -3900,9 +4482,14 @@
       };
     }
 
+    function isTypingTarget(target) {
+      return target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
+    }
+
     document.addEventListener("keydown", (event) => {
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const mod = isMac ? event.metaKey : event.ctrlKey;
+      if (isTypingTarget(event.target) && !mod && event.key !== "Escape") return;
       if (mod && event.key.toLowerCase() === "s") {
         event.preventDefault();
         if (state.screen === "editor") saveJson();
@@ -3910,6 +4497,9 @@
         event.preventDefault();
         fileInput.click();
       } else if (mod && event.key.toLowerCase() === "z" && event.shiftKey) {
+        event.preventDefault();
+        redo();
+      } else if (mod && event.key.toLowerCase() === "y") {
         event.preventDefault();
         redo();
       } else if (mod && event.key.toLowerCase() === "z") {
@@ -3921,6 +4511,24 @@
         state.connectMode = false;
         state.connectFromId = null;
         state.drawKind = null;
+        render();
+      } else if (event.key === " ") {
+        if (state.screen !== "editor") return;
+        event.preventDefault();
+        spacePressed = true;
+      } else if (!mod && state.screen === "editor" && event.key.toLowerCase() === "h") {
+        state.panTool = true;
+        state.connectMode = false;
+        render();
+      } else if (!mod && state.screen === "editor" && event.key.toLowerCase() === "v") {
+        state.panTool = false;
+        state.connectMode = false;
+        state.drawKind = null;
+        render();
+      } else if (!mod && state.screen === "editor" && event.key.toLowerCase() === "c") {
+        state.panTool = false;
+        state.connectMode = true;
+        state.connectFromId = null;
         render();
       } else if (mod && event.key.toLowerCase() === "c" && state.selectedId) {
         const node = getNode(state.selectedId);
@@ -3937,6 +4545,10 @@
         state.selectedId = copy.id;
         render();
       }
+    });
+
+    document.addEventListener("keyup", (event) => {
+      if (event.key === " ") spacePressed = false;
     });
 
     render();
