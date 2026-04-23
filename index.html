@@ -1,0 +1,3945 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>関係図整理ツール</title>
+  <style>
+    :root {
+      --bg: #f8f6f1;
+      --paper: #ffffff;
+      --paper-soft: #fffaf3;
+      --line: #e6e0d6;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --orange: #fb6f1f;
+      --orange-soft: #fff3e8;
+      --blue: #2577d2;
+      --blue-soft: #eef6ff;
+      --green: #2f9d52;
+      --green-soft: #eefaf1;
+      --purple: #7c4fd6;
+      --purple-soft: #f5efff;
+      --pink: #e64ea4;
+      --pink-soft: #fff0f8;
+      --shadow: 0 18px 45px rgba(35, 31, 27, 0.08);
+      --shadow-soft: 0 8px 20px rgba(35, 31, 27, 0.08);
+      --radius: 18px;
+      --font: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(251, 111, 31, 0.08), transparent 28%),
+        radial-gradient(circle at 92% 8%, rgba(37, 119, 210, 0.08), transparent 30%),
+        linear-gradient(180deg, #fbfaf7 0%, var(--bg) 100%);
+      font-family: var(--font);
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .app {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      display: inline-grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, #ff8b38, #fb6418);
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(251, 111, 31, 0.24);
+      flex: 0 0 auto;
+    }
+
+    .logo svg,
+    .mini-icon svg,
+    .card-icon svg,
+    .node-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .top-shell {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 92px 1fr 48px;
+      overflow: hidden;
+    }
+
+    .top-header,
+    .editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 28px;
+      background: rgba(255, 255, 255, 0.82);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 260px;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .top-actions,
+    .toolbar,
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 10px 16px;
+      color: #253244;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+      font-weight: 800;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: #d4cabe;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn.primary-orange {
+      color: #fff;
+      background: linear-gradient(135deg, #ff892d, #fb6819);
+      border-color: transparent;
+    }
+
+    .btn.primary-blue {
+      color: #fff;
+      background: linear-gradient(135deg, #3489e7, #1f6fcb);
+      border-color: transparent;
+    }
+
+    .btn.primary-green {
+      color: #fff;
+      background: linear-gradient(135deg, #42b866, #2e984e);
+      border-color: transparent;
+    }
+
+    .btn.ghost-orange {
+      color: var(--orange);
+      background: var(--orange-soft);
+      border-color: #ffd7bf;
+    }
+
+    .btn.ghost-blue {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #cce3ff;
+    }
+
+    .btn.ghost-green {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: #cdeed5;
+    }
+
+    .btn.ghost-purple {
+      color: var(--purple);
+      background: var(--purple-soft);
+      border-color: #dfd1ff;
+    }
+
+    .btn.ghost-pink {
+      color: var(--pink);
+      background: var(--pink-soft);
+      border-color: #ffd0e9;
+    }
+
+    .btn.small {
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: 12px;
+      border-radius: 9px;
+    }
+
+    .btn.icon-only {
+      width: 38px;
+      min-width: 38px;
+      padding: 7px;
+    }
+
+    .mini-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .top-main {
+      padding: 32px 54px 24px;
+      overflow: auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) minmax(460px, 0.92fr);
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 22px;
+    }
+
+    .hero h2 {
+      margin: 0 0 18px;
+      font-size: clamp(38px, 4.2vw, 58px);
+      line-height: 1.13;
+      letter-spacing: -0.06em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #4f5b6c;
+      font-size: 20px;
+      line-height: 1.9;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-visual {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid #eee6da;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .visual-panel {
+      min-height: 162px;
+      position: relative;
+      padding: 18px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .visual-panel h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      font-size: 15px;
+    }
+
+    .visual-panel.orange {
+      color: var(--orange);
+      background: var(--orange-soft);
+      border: 1px solid #ffcda9;
+    }
+
+    .visual-panel.blue {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border: 1px solid #b8d9ff;
+    }
+
+    .visual-panel.green {
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid #bde8ca;
+    }
+
+    .mini-map {
+      height: 96px;
+      position: relative;
+    }
+
+    .mini-box {
+      position: absolute;
+      width: 42px;
+      height: 18px;
+      border: 2px solid currentColor;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.85);
+      opacity: 0.72;
+    }
+
+    .mini-box.root {
+      left: calc(50% - 21px);
+      top: 4px;
+    }
+
+    .mini-box.a {
+      left: 12px;
+      top: 64px;
+    }
+
+    .mini-box.b {
+      left: calc(50% - 21px);
+      top: 64px;
+    }
+
+    .mini-box.c {
+      right: 12px;
+      top: 64px;
+    }
+
+    .mini-lines {
+      position: absolute;
+      inset: 0;
+      color: currentColor;
+      opacity: 0.8;
+    }
+
+    .start-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 24px;
+      margin: 0 0 26px;
+    }
+
+    .start-card {
+      position: relative;
+      min-height: 302px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 26px;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .start-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), transparent 55%);
+      pointer-events: none;
+    }
+
+    .start-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .start-card.orange {
+      border-color: #ffc9a8;
+    }
+
+    .start-card.blue {
+      border-color: #bddcff;
+    }
+
+    .start-card.green {
+      border-color: #bfe9ca;
+    }
+
+    .start-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 20px;
+      flex: 0 0 auto;
+    }
+
+    .orange .step-number {
+      background: var(--orange);
+    }
+
+    .blue .step-number {
+      background: var(--blue);
+    }
+
+    .green .step-number {
+      background: var(--green);
+    }
+
+    .start-body {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      align-items: center;
+      gap: 18px;
+      color: #4f5b6c;
+      line-height: 1.9;
+      font-size: 16px;
+      flex: 1;
+    }
+
+    .card-icon {
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border-radius: 50%;
+    }
+
+    .orange .card-icon {
+      color: var(--orange);
+      background: #fff1e7;
+    }
+
+    .blue .card-icon {
+      color: var(--blue);
+      background: #eaf4ff;
+    }
+
+    .green .card-icon {
+      color: var(--green);
+      background: #eaf8ee;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: #f4f0ea;
+      color: #555;
+    }
+
+    .tag.orange {
+      color: var(--orange);
+      background: #fff1e7;
+      border: 1px solid #ffd6ba;
+    }
+
+    .tag.blue {
+      color: var(--blue);
+      background: #edf6ff;
+      border: 1px solid #cfe6ff;
+    }
+
+    .tag.green {
+      color: var(--green);
+      background: #effaf2;
+      border: 1px solid #d3efd9;
+    }
+
+    .tag.purple {
+      color: var(--purple);
+      background: #f2edff;
+      border: 1px solid #dfd2ff;
+    }
+
+    .flow-card {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 24px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: start;
+      gap: 18px;
+    }
+
+    .flow-step {
+      position: relative;
+      padding: 0 16px 0 72px;
+      min-height: 88px;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 26px;
+      left: calc(100% - 18px);
+      width: 42px;
+      border-top: 2px dashed currentColor;
+      opacity: 0.72;
+    }
+
+    .flow-mark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid currentColor;
+    }
+
+    .flow-step h3 {
+      margin: 7px 0 8px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .flow-step p,
+    .recommend-card li {
+      margin: 0;
+      color: #5c6675;
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .recommend-card {
+      padding: 18px 22px;
+      background: #fff6ec;
+      border-radius: 14px;
+    }
+
+    .recommend-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .recommend-card ul {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .top-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 56px;
+      color: #7a8493;
+      font-size: 13px;
+    }
+
+    .editor-shell {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100%;
+      display: grid;
+      grid-template-rows: 76px 1fr 40px;
+      background: #fbfaf7;
+      overflow: hidden;
+    }
+
+    .editor-header {
+      padding: 10px 22px;
+      gap: 20px;
+    }
+
+    .editor-header .brand-title {
+      font-size: 26px;
+    }
+
+    .toolbar {
+      flex: 1;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+      flex-wrap: nowrap;
+    }
+
+    .toolbar-group {
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: 0 6px 20px rgba(31, 41, 55, 0.04);
+      flex-wrap: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .stage-badge {
+      min-width: 250px;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .stage-badge small {
+      display: block;
+      color: #5f6b7a;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stage-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 66px;
+      height: 30px;
+      color: #fff;
+      border-radius: 7px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+    }
+
+    .stage-1 .stage-label {
+      background: var(--orange);
+    }
+
+    .stage-2 .stage-label {
+      background: var(--blue);
+    }
+
+    .stage-3 .stage-label {
+      background: var(--orange);
+    }
+
+    .stage-title {
+      font-weight: 900;
+      color: var(--orange);
+    }
+
+    .stage-2 .stage-title {
+      color: var(--blue);
+    }
+
+    .stage-3 .stage-title {
+      color: var(--orange);
+    }
+
+    .editor-main {
+      width: 100%;
+      min-height: 0;
+      position: relative;
+      display: grid;
+      grid-template-columns: 252px minmax(0, 1fr);
+      gap: 12px;
+      padding: 10px 364px 10px 12px;
+      overflow: hidden;
+    }
+
+    .side-panel,
+    .right-panel,
+    .canvas-panel {
+      min-width: 0;
+      min-height: 0;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(31, 41, 55, 0.05);
+      overflow: hidden;
+    }
+
+    .side-panel,
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .right-panel {
+      position: fixed;
+      top: 86px;
+      right: 12px;
+      bottom: 50px;
+      width: 340px;
+      z-index: 30;
+    }
+
+    .panel-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    .panel-title {
+      margin: 0 0 2px;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .panel-caption {
+      margin: 0 0 16px;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .tool-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .tool-btn {
+      width: 100%;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .tool-btn.orange {
+      color: var(--orange);
+      background: var(--orange-soft);
+      border-color: #ffc9a8;
+    }
+
+    .tool-btn.blue {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #b8d9ff;
+    }
+
+    .tool-btn.green {
+      color: var(--green);
+      background: var(--green-soft);
+      border-color: #bfe9ca;
+    }
+
+    .tool-btn.purple {
+      color: var(--purple);
+      background: var(--purple-soft);
+      border-color: #decfff;
+    }
+
+    .tool-btn.active {
+      outline: 3px solid rgba(124, 79, 214, 0.18);
+      box-shadow: 0 8px 20px rgba(124, 79, 214, 0.11);
+    }
+
+    .tool-btn .mini-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    .tool-card {
+      margin-top: 14px;
+      padding: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .tool-card h3 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tool-card p,
+    .tool-card li {
+      margin: 0;
+      color: #5f6b7a;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .tool-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .zoom-box {
+      display: grid;
+      grid-template-columns: 36px 1fr 36px 36px;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .zoom-value {
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .canvas-panel {
+      position: relative;
+      background:
+        linear-gradient(90deg, rgba(230, 224, 214, 0.38) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(230, 224, 214, 0.38) 1px, transparent 1px),
+        #fffdf9;
+      background-size: 28px 28px;
+    }
+
+    .canvas-viewport {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .canvas-viewport.panning {
+      cursor: grab;
+    }
+
+    .workspace {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1440px;
+      height: 840px;
+      transform-origin: 0 0;
+    }
+
+    .area {
+      position: absolute;
+      border-radius: 18px;
+      border: 1.5px dashed currentColor;
+      background: rgba(255, 255, 255, 0.52);
+      overflow: hidden;
+    }
+
+    .area.publicArea {
+      color: var(--orange);
+      background: rgba(255, 243, 232, 0.55);
+    }
+
+    .area.adminArea {
+      color: var(--blue);
+      background: rgba(238, 246, 255, 0.58);
+    }
+
+    .area.dbArea {
+      color: var(--green);
+      background: rgba(238, 250, 241, 0.72);
+    }
+
+    .area-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 20px 24px 10px;
+      pointer-events: none;
+    }
+
+    .area-header .mini-icon {
+      width: 34px;
+      height: 34px;
+      margin-top: 2px;
+    }
+
+    .area-header h2 {
+      margin: 0;
+      color: currentColor;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .area-header p {
+      margin: 6px 0 0;
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .locked-area {
+      position: absolute;
+      inset: 88px 22px 22px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #748092;
+      pointer-events: none;
+    }
+
+    .locked-area-inner {
+      max-width: 280px;
+    }
+
+    .locked-area .lock {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      color: #6c7b8f;
+      background: rgba(221, 232, 245, 0.75);
+      border: 1px solid #cfdeee;
+      border-radius: 50%;
+    }
+
+    .locked-area strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .db-group {
+      position: absolute;
+      border: 1px solid #b7e4c3;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--green);
+      pointer-events: none;
+    }
+
+    .db-group h3 {
+      margin: 0;
+      padding: 12px 16px 4px 42px;
+      color: var(--green);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .db-group p {
+      margin: 0;
+      padding: 0 16px 12px 42px;
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .db-group::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 13px;
+      width: 18px;
+      height: 22px;
+      border: 2px solid currentColor;
+      border-radius: 50% / 18%;
+      box-shadow: 0 7px 0 -2px currentColor;
+      opacity: 0.9;
+    }
+
+    .edge-svg {
+      position: absolute;
+      inset: 0;
+      width: 1440px;
+      height: 840px;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .edge-hit {
+      pointer-events: stroke;
+      fill: none;
+      stroke: transparent;
+      stroke-width: 18;
+      cursor: pointer;
+    }
+
+    .edge-line {
+      fill: none;
+      stroke-width: 3;
+      pointer-events: none;
+    }
+
+    .edge-line.navigate {
+      stroke: var(--purple);
+    }
+
+    .edge-line.save {
+      stroke: var(--orange);
+    }
+
+    .edge-line.reference {
+      stroke: var(--blue);
+    }
+
+    .edge-line.selected {
+      stroke-width: 5;
+      filter: drop-shadow(0 2px 4px rgba(31, 41, 55, 0.24));
+    }
+
+    .edge-label {
+      fill: #263142;
+      font-size: 12px;
+      font-weight: 900;
+      paint-order: stroke;
+      stroke: #fff;
+      stroke-width: 4px;
+      pointer-events: none;
+    }
+
+    .node {
+      position: absolute;
+      z-index: 6;
+      min-width: 160px;
+      min-height: 106px;
+      border: 2px solid currentColor;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 8px 18px rgba(31, 41, 55, 0.12);
+      color: #64748b;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .node.publicPage {
+      color: var(--orange);
+    }
+
+    .node.adminPage {
+      color: var(--blue);
+    }
+
+    .node.modal,
+    .node.popup {
+      color: var(--purple);
+      background: rgba(250, 247, 255, 0.96);
+    }
+
+    .node.saveData,
+    .node.referenceData {
+      color: var(--green);
+    }
+
+    .node.referenceData {
+      color: #2797c7;
+    }
+
+    .node.selected {
+      outline: 4px solid rgba(124, 79, 214, 0.18);
+      box-shadow: 0 10px 28px rgba(31, 41, 55, 0.2);
+    }
+
+    .node.connect-source {
+      outline: 4px solid rgba(251, 111, 31, 0.28);
+    }
+
+    .node-inner {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+    }
+
+    .node-top {
+      display: grid;
+      grid-template-columns: 28px 1fr 20px;
+      gap: 10px;
+      align-items: start;
+      color: #263142;
+    }
+
+    .node-icon {
+      width: 24px;
+      height: 24px;
+      color: currentColor;
+      margin-top: 2px;
+    }
+
+    .node-title {
+      min-width: 0;
+      margin: 0;
+      color: #1f2937;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .node-file {
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .node-menu {
+      color: #94a3b8;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .node-description {
+      margin: 9px 0 10px;
+      color: #596575;
+      font-size: 12px;
+      line-height: 1.5;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .node-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .node-chip {
+      max-width: 92px;
+      padding: 4px 7px;
+      color: #475569;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .node-detail {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+      padding-top: 9px;
+      border-top: 1px solid #eadfd1;
+      color: #4b5563;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .node-detail strong {
+      color: #253244;
+    }
+
+    .resize-handle {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+    }
+
+    .resize-handle::after {
+      content: "";
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      opacity: 0.5;
+    }
+
+    .draw-preview {
+      position: absolute;
+      z-index: 20;
+      border: 2px dashed var(--purple);
+      border-radius: 12px;
+      background: rgba(124, 79, 214, 0.08);
+      pointer-events: none;
+    }
+
+    .area-divider {
+      position: absolute;
+      z-index: 9;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px dashed rgba(124, 79, 214, 0.38);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .area-divider:hover {
+      background: rgba(124, 79, 214, 0.08);
+      border-color: rgba(124, 79, 214, 0.74);
+    }
+
+    .area-divider.vertical {
+      width: 16px;
+      cursor: ew-resize;
+    }
+
+    .area-divider.horizontal {
+      height: 16px;
+      cursor: ns-resize;
+    }
+
+    .right-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 16px 16px 10px;
+      border-bottom: 1px solid #f0ebe4;
+    }
+
+    .right-header h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .form-section {
+      border-bottom: 1px solid #f0ebe4;
+      padding: 14px 0;
+    }
+
+    .form-section:first-child {
+      padding-top: 0;
+    }
+
+    .form-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      color: #4b5563;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 9px 10px;
+      color: #263142;
+      background: #fff;
+      border: 1px solid #e5dfd6;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #b9a8ff;
+      box-shadow: 0 0 0 3px rgba(124, 79, 214, 0.12);
+    }
+
+    .field textarea {
+      min-height: 72px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .empty-guide {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      color: #5f6b7a;
+      background: #fffaf3;
+      border: 1px solid #f1dfcb;
+      border-radius: 12px;
+      line-height: 1.7;
+    }
+
+    .warning-box {
+      display: grid;
+      gap: 7px;
+      margin-top: 12px;
+      padding: 12px;
+      background: #fff8e8;
+      border: 1px solid #f3d7a8;
+      border-radius: 12px;
+      color: #7c4f10;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .ai-card {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid #e8ddff;
+      border-radius: 12px;
+      background: #fbf8ff;
+    }
+
+    .ai-card h3 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .ai-tabs {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ai-tab {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .ai-tab.active {
+      outline: 3px solid rgba(124, 79, 214, 0.16);
+    }
+
+    .prompt-output {
+      min-height: 140px;
+      max-height: 300px;
+      overflow: auto;
+      padding: 10px;
+      color: #263142;
+      background: #fff;
+      border: 1px solid #e5dfd6;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      font-family: "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 18px;
+      color: #5f6b7a;
+      background: rgba(255, 255, 255, 0.88);
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      overflow: hidden;
+    }
+
+    .status-left,
+    .status-center,
+    .status-right {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-name-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 900;
+      color: #263142;
+    }
+
+    .legend-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    .legend-line {
+      width: 28px;
+      height: 0;
+      border-top: 3px solid currentColor;
+    }
+
+    .legend-line.navigate {
+      color: var(--purple);
+    }
+
+    .legend-line.save {
+      color: var(--orange);
+    }
+
+    .legend-line.reference {
+      color: var(--blue);
+    }
+
+    .hidden-file {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 20px;
+      z-index: 1000;
+      max-width: 420px;
+      padding: 13px 16px;
+      color: #243142;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(31, 41, 55, 0.24);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-box {
+      width: min(720px, 100%);
+      max-height: min(760px, calc(100vh - 40px));
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .modal-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 20px 22px;
+      color: #4b5563;
+      line-height: 1.8;
+    }
+
+    .modal-body h3 {
+      color: #253244;
+      margin: 18px 0 8px;
+      font-size: 16px;
+    }
+
+    .modal-body ul {
+      margin: 0 0 10px;
+      padding-left: 22px;
+    }
+
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .sample-card {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-height: 160px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fffaf3;
+      text-align: left;
+    }
+
+    .sample-card h3 {
+      margin: 0;
+      color: #263142;
+      font-size: 16px;
+    }
+
+    .sample-card p {
+      margin: 0;
+      color: #5f6b7a;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1280px) {
+      .top-main {
+        padding: 26px;
+      }
+
+      .hero,
+      .flow-card {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-main {
+        grid-template-columns: 220px minmax(520px, 1fr) 310px;
+      }
+
+      .toolbar .btn {
+        padding-left: 11px;
+        padding-right: 11px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      body {
+        overflow: auto;
+      }
+
+      .top-shell,
+      .editor-shell {
+        min-height: 100vh;
+        height: auto;
+        overflow: visible;
+      }
+
+      .top-header,
+      .editor-header,
+      .top-footer,
+      .status-bar {
+        flex-wrap: wrap;
+        height: auto;
+      }
+
+      .start-cards,
+      .hero-visual,
+      .flow-steps,
+      .sample-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-main {
+        height: 1100px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        overflow: visible;
+      }
+
+      .side-panel,
+      .right-panel {
+        max-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app"></div>
+  <input id="fileInput" class="hidden-file" type="file" accept="application/json,.json">
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+    const APP_NAME = "関係図整理ツール";
+    const STORAGE_KEY = "relation-map-tool-autosave";
+    const WORKSPACE = { width: 1440, height: 840 };
+    const STAGE_NAMES = {
+      1: "公開ページ整理",
+      2: "管理ページ追加",
+      3: "DB接続整理"
+    };
+    const KIND_LABELS = {
+      publicPage: "公開ページ",
+      adminPage: "管理ページ",
+      modal: "モーダル",
+      popup: "ポップアップ",
+      saveData: "保存データ",
+      referenceData: "参照データ"
+    };
+    const RELATION_LABELS = {
+      navigate: "ページ遷移",
+      save: "保存",
+      reference: "参照"
+    };
+    const defaultAreas = () => ({
+      publicArea: {
+        id: "publicArea",
+        kind: "publicArea",
+        x: 22,
+        y: 22,
+        width: 690,
+        height: 420,
+        title: "① 公開ページエリア",
+        color: "orange"
+      },
+      adminArea: {
+        id: "adminArea",
+        kind: "adminArea",
+        x: 736,
+        y: 22,
+        width: 682,
+        height: 420,
+        title: "② 管理ページエリア",
+        color: "blue"
+      },
+      dbArea: {
+        id: "dbArea",
+        kind: "dbArea",
+        x: 22,
+        y: 456,
+        width: 1396,
+        height: 360,
+        title: "③ DB接続エリア",
+        color: "green"
+      }
+    });
+
+    const promptTemplates = {
+      step1Scaffold: `以下は「関係図整理ツール」から出力した STEP1（公開ページ整理）の構造情報です。
+あなたの役割は、非エンジニアでも追いやすい粒度で、公開ページのサイトマップ、ページ間導線、各ページに紐づく CSS / JS の初期構造を、このツールへ再読込できる保存用JSONとして作成することです。
+
+【今回の目的】
+- 公開ページの整理
+- 公開ページに紐づくモーダル / ポップアップの整理
+- ページ間導線の整理
+- CSS / JS の初期整理
+
+【重要ルール】
+- 返答は保存用JSONのみ
+- 前置き、説明、コードブロックは禁止
+- version / app / stage / areas / nodes / edges を含むこと
+- stage は 1
+- 公開ページと、その段階で必要なモーダル / ポップアップのみを中心に作成すること
+- 管理ページやDB接続は、まだ主役にしないこと
+- 不明点があっても質問せず、仮置きとして自然な構造で補うこと
+- 非エンジニアでも読めるページ名を主表示にし、htmlファイル名は補助として付けること
+- CSS / JS は common と specific を使い分けること
+- モーダル / ポップアップを作成する場合は linkedParentId をできるだけ設定すること
+- nodes と edges は、このツールが読み込みやすい整ったJSONにすること
+
+【保存用JSONの最低要件】
+- version: 1
+- app: "relation-map-tool"
+- screen: "editor"
+- stage: 1
+- projectName
+- userLevel
+- viewMode
+- areas
+- nodes
+- edges
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーが今回作りたいもの】
+{{USER_INPUT}}
+
+上記を踏まえて、このツールがそのまま読み込める保存用JSONを完成させてください。`,
+      step1Consult: `以下は「関係図整理ツール」から出力した STEP1（公開ページ整理）の途中経過です。
+不足している公開ページ、導線の不自然さ、モーダル / ポップアップの置き方、CSS / JS の分け方の粗さを、非エンジニアにもわかりやすく指摘してください。
+
+【見てほしい観点】
+- 公開ページの不足
+- 導線の不足や不自然さ
+- モーダル / ポップアップの位置づけ
+- CSS / JS の分け方の大まかな妥当性
+- 次に取るべき修正アクション
+
+【出力ルール】
+- 回答は日本語
+- 非エンジニアにもわかる説明にする
+- 箇条書き中心で整理する
+- 「良い点」「気になる点」「不足候補」「次にやること」に分けて回答する
+- このツールの構造を前提に回答する
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーからの相談内容】
+{{USER_INPUT}}`,
+      step2Scaffold: `以下は「関係図整理ツール」から出力した STEP2（管理ページ追加）の構造情報です。
+あなたの役割は、既存の公開ページ構造を前提に、管理ページ側のサイトマップ、必要なモーダル / ポップアップ、各ページの CSS / JS を追加した、このツールへ再読込できる保存用JSONを作成することです。
+
+【今回の目的】
+- 公開ページを前提に管理ページを追加する
+- 管理ページ間導線を整理する
+- 管理ページに紐づく CSS / JS を追加する
+- 必要なら管理モーダル / 管理ポップアップも追加する
+
+【重要ルール】
+- 返答は保存用JSONのみ
+- 前置き、説明、コードブロックは禁止
+- stage は 2
+- 既存の公開ページ構造をできるだけ保ちつつ、管理ページを追加すること
+- 管理ページ名は非エンジニアにも分かりやすいものにすること
+- htmlファイル名は補助として付けること
+- DB接続はまだ主役にしないこと
+- モーダル / ポップアップは親ページとの関係が分かるよう linkedParentId をできるだけ設定すること
+- 保存用JSONとして破綻しない形にすること
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーが今回作りたいもの】
+{{USER_INPUT}}
+
+上記を踏まえて、このツールがそのまま読み込める保存用JSONを完成させてください。`,
+      step2Consult: `以下は「関係図整理ツール」から出力した STEP2（管理ページ追加）の途中経過です。
+公開ページに対して管理ページ側の構造が足りているか、役割分担が不自然ではないか、必要な管理モーダルや編集導線が不足していないかを、非エンジニアにもわかりやすく指摘してください。
+
+【見てほしい観点】
+- 管理ページの不足
+- 管理一覧 / 編集 / 確認 / 戻る導線の不足
+- 公開ページと管理ページの役割分担
+- 管理モーダル / 管理ポップアップの必要性
+- CSS / JS の大まかな分割の妥当性
+- 次に取るべき修正アクション
+
+【出力ルール】
+- 回答は日本語
+- 箇条書き中心
+- 「良い点」「気になる点」「不足候補」「次にやること」に分ける
+- このツールの構造を前提に回答する
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーからの相談内容】
+{{USER_INPUT}}`,
+      step3Scaffold: `以下は「関係図整理ツール」から出力した STEP3（DB接続整理）の構造情報です。
+あなたの役割は、既存の公開ページ / 管理ページ構造を前提に、保存データと参照データ、保存 / 参照の接続関係を追加した、このツールへ再読込できる保存用JSONを作成することです。
+
+【今回の目的】
+- 保存データ項目の整理
+- 参照データ項目の整理
+- ページ / モーダル と DB の保存 / 参照関係の整理
+- 不足している DB接続の候補を補う
+
+【重要ルール】
+- 返答は保存用JSONのみ
+- 前置き、説明、コードブロックは禁止
+- stage は 3
+- save 接続は page / modal / popup → saveData
+- reference 接続は referenceData → page / modal / popup
+- 保存先 / 参照元の意味が非エンジニアにも追いやすい名称にすること
+- 既存のページ構造はできるだけ保つこと
+- 接続ラベルも最低限つけること
+- 保存用JSONとして読み込み可能な形にすること
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーが今回作りたいもの】
+{{USER_INPUT}}
+
+上記を踏まえて、このツールがそのまま読み込める保存用JSONを完成させてください。`,
+      step3Consult: `以下は「関係図整理ツール」から出力した STEP3（DB接続整理）の途中経過です。
+保存データと参照データの分け方、保存 / 参照の接続漏れ、接続方向の不整合、DB項目名の分かりやすさを、非エンジニアにもわかりやすく指摘してください。
+
+【見てほしい観点】
+- 保存データと参照データの切り分け
+- 保存接続の不足
+- 参照接続の不足
+- 接続方向の誤り
+- ページ / モーダルごとのDB関係の不自然さ
+- 次に取るべき修正アクション
+
+【出力ルール】
+- 回答は日本語
+- 箇条書き中心
+- 「良い点」「気になる点」「不足候補」「次にやること」に分ける
+- このツールの構造を前提に回答する
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーからの相談内容】
+{{USER_INPUT}}`,
+      finalOutput: `以下は「関係図整理ツール」で整理した関係図の完成版、または完成に近い版です。
+この構造を読み取り、ユーザーがこのあと何をしたいかに合わせて、最適な次アクション用の出力を作成してください。
+
+【このツールで整理されているもの】
+- 公開ページ
+- 管理ページ
+- モーダル / ポップアップ
+- ページ間導線
+- CSS / JS
+- DB接続
+- 保存 / 参照関係
+
+【あなたに期待すること】
+ユーザーの要望に応じて、次のいずれか、または複数を作成してください。
+- 実装方針
+- 必要ファイル一覧
+- フォルダ構成案
+- 実装順序
+- Codex向け実装プロンプト
+- 仕様書たたき台
+- テスト観点
+- 注意点
+
+【出力ルール】
+- 回答は日本語
+- ユーザーの次アクションに直接つながる内容にする
+- 曖昧な一般論ではなく、現在構造に基づいて整理する
+- 必要に応じて章立てしてよい
+- このツールの構造を前提に回答する
+
+【現在状態】
+{{SERIALIZED_STATE}}
+
+【ユーザーがこのあとやりたいこと】
+{{USER_INPUT}}`
+    };
+
+    const queryStage = Number(new URLSearchParams(location.search).get("stage"));
+    const hashStage = Number((location.hash.match(/stage=(\d)/) || [])[1]);
+    const initialStage = queryStage || hashStage;
+    let state = createSampleData(initialStage >= 1 && initialStage <= 3 ? initialStage : 1, "corporate");
+    state.screen = initialStage >= 1 && initialStage <= 3 ? "editor" : "top";
+    let historyStack = [];
+    let futureStack = [];
+    let clipboardNode = null;
+    let toastTimer = null;
+    let dragState = null;
+    let currentModal = null;
+    let lastGeneratedPrompt = "";
+
+    const app = document.getElementById("app");
+    const fileInput = document.getElementById("fileInput");
+    const toastEl = document.getElementById("toast");
+
+    function deepClone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function uid(prefix) {
+      return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+    }
+
+    function svgIcon(name) {
+      const common = `fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"`;
+      const icons = {
+        logo: `<svg viewBox="0 0 48 48" aria-hidden="true"><path ${common} d="M15 32 24 18l10 7"/><path ${common} d="M12 34a5 5 0 1 0 0 .1M24 18a5 5 0 1 0 0 .1M36 25a5 5 0 1 0 0 .1"/><path ${common} d="M36 30v8M32 34h8"/></svg>`,
+        plus: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M12 5v14M5 12h14"/></svg>`,
+        save: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M5 4h12l2 2v14H5z"/><path ${common} d="M8 4v6h8V4M8 20v-6h8v6"/></svg>`,
+        folder: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M3 7h7l2 2h9v10H3z"/></svg>`,
+        upload: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>`,
+        help: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle ${common} cx="12" cy="12" r="9"/><path ${common} d="M9.8 9a2.4 2.4 0 1 1 3.9 1.9c-.9.6-1.7 1.2-1.7 2.6M12 17.5h.01"/></svg>`,
+        globe: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle ${common} cx="12" cy="12" r="9"/><path ${common} d="M3 12h18M12 3c2.5 2.4 3.8 5.4 3.8 9S14.5 18.6 12 21M12 3c-2.5 2.4-3.8 5.4-3.8 9S9.5 18.6 12 21"/></svg>`,
+        lock: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect ${common} x="5" y="10" width="14" height="10" rx="2"/><path ${common} d="M8 10V8a4 4 0 0 1 8 0v2"/></svg>`,
+        db: `<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse ${common} cx="12" cy="6" rx="7" ry="3"/><path ${common} d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>`,
+        page: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M6 3h9l3 3v15H6z"/><path ${common} d="M15 3v4h4M9 12h6M9 16h6"/></svg>`,
+        home: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="m4 11 8-7 8 7"/><path ${common} d="M6 10v10h12V10M10 20v-6h4v6"/></svg>`,
+        list: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M9 7h11M9 12h11M9 17h11"/><path ${common} d="M4 7h.01M4 12h.01M4 17h.01"/></svg>`,
+        modal: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect ${common} x="4" y="5" width="16" height="14" rx="2"/><rect ${common} x="8" y="9" width="8" height="5" rx="1"/><path ${common} d="M8 17h8"/></svg>`,
+        popup: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect ${common} x="5" y="7" width="11" height="10" rx="2"/><path ${common} d="M12 7V5h7v7h-2M15 5h4v4"/></svg>`,
+        link: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M9 7H7a5 5 0 0 0 0 10h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8"/></svg>`,
+        spark: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>`,
+        text: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M4 5h16M8 5v14M16 5v14M6 19h4M14 19h4"/></svg>`,
+        trash: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>`,
+        copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect ${common} x="8" y="8" width="11" height="12" rx="2"/><path ${common} d="M5 16H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+        eye: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle ${common} cx="12" cy="12" r="3"/></svg>`,
+        zoomIn: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle ${common} cx="10" cy="10" r="6"/><path ${common} d="M15 15l5 5M10 7v6M7 10h6"/></svg>`,
+        zoomOut: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle ${common} cx="10" cy="10" r="6"/><path ${common} d="M15 15l5 5M7 10h6"/></svg>`,
+        hand: `<svg viewBox="0 0 24 24" aria-hidden="true"><path ${common} d="M7 12V5a2 2 0 0 1 4 0v6M11 11V4a2 2 0 0 1 4 0v8M15 12V7a2 2 0 0 1 4 0v8c0 4-2.8 7-7 7h-1a7 7 0 0 1-5.6-2.8L3 16a2 2 0 0 1 3.2-2.4L8 16"/></svg>`,
+        clock: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle ${common} cx="12" cy="12" r="9"/><path ${common} d="M12 7v5l3 2"/></svg>`,
+        table: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect ${common} x="4" y="5" width="16" height="14" rx="2"/><path ${common} d="M4 10h16M9 5v14"/></svg>`
+      };
+      return icons[name] || icons.page;
+    }
+
+    function iconHtml(name) {
+      return `<span class="mini-icon">${svgIcon(name)}</span>`;
+    }
+
+    function createBaseState(stage = 1) {
+      return {
+        version: 1,
+        app: "relation-map-tool",
+        screen: "editor",
+        stage,
+        projectName: "",
+        userLevel: "nonEngineer",
+        viewMode: "simple",
+        zoom: 1,
+        panX: 0,
+        panY: 0,
+        areas: defaultAreas(),
+        nodes: [],
+        edges: [],
+        selectedId: null,
+        selectedEdgeId: null,
+        connectMode: false,
+        connectFromId: null,
+        connectionType: "navigate",
+        drawKind: null,
+        aiMode: "consult",
+        aiInput: "",
+        aiOutput: "",
+        meta: {
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          source: "manual"
+        }
+      };
+    }
+
+    function normalizeState(input) {
+      const base = createBaseState(Number(input.stage) || 1);
+      const next = {
+        ...base,
+        ...input,
+        app: "relation-map-tool",
+        version: 1,
+        screen: input.screen === "top" ? "top" : "editor",
+        stage: Math.min(3, Math.max(1, Number(input.stage) || 1)),
+        viewMode: input.viewMode === "detail" ? "detail" : "simple",
+        zoom: Number(input.zoom) || 1,
+        panX: Number(input.panX) || 0,
+        panY: Number(input.panY) || 0,
+        areas: { ...defaultAreas(), ...(input.areas || {}) },
+        nodes: Array.isArray(input.nodes) ? input.nodes.map(normalizeNode) : [],
+        edges: Array.isArray(input.edges) ? input.edges.map(normalizeEdge) : [],
+        meta: {
+          createdAt: input.meta?.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          source: input.meta?.source || "manual"
+        }
+      };
+      next.nodes = next.nodes.filter((node) => Boolean(node.id));
+      next.edges = next.edges.filter((edge) => edge.id && edge.fromId && edge.toId);
+      return next;
+    }
+
+    function normalizeNode(node) {
+      const kind = node.kind || "publicPage";
+      const isDb = kind === "saveData" || kind === "referenceData";
+      const areaKind = node.areaKind || inferAreaKind(kind);
+      return {
+        id: node.id || uid("node"),
+        kind,
+        areaKind,
+        linkedParentId: node.linkedParentId || "",
+        name: node.name || (isDb ? "データ項目" : "新しいページ"),
+        htmlFile: isDb ? "" : (node.htmlFile || ""),
+        tableName: isDb ? (node.tableName || "") : "",
+        title: node.title || node.name || "",
+        description: node.description || "",
+        notes: node.notes || "",
+        x: Number(node.x) || 80,
+        y: Number(node.y) || 80,
+        width: Number(node.width) || (isDb ? 172 : 240),
+        height: Number(node.height) || (isDb ? 160 : 118),
+        collapsed: Boolean(node.collapsed),
+        cssItems: Array.isArray(node.cssItems) ? node.cssItems : [],
+        jsItems: Array.isArray(node.jsItems) ? node.jsItems : [],
+        linkHints: Array.isArray(node.linkHints) ? node.linkHints : [],
+        dbHints: Array.isArray(node.dbHints) ? node.dbHints : [],
+        stageVisibleFrom: Number(node.stageVisibleFrom) || defaultStageForKind(kind),
+        fields: Array.isArray(node.fields) ? node.fields : []
+      };
+    }
+
+    function normalizeEdge(edge) {
+      return {
+        id: edge.id || uid("edge"),
+        fromId: edge.fromId || "",
+        toId: edge.toId || "",
+        relationType: edge.relationType || "navigate",
+        label: edge.label || RELATION_LABELS[edge.relationType] || "接続",
+        description: edge.description || ""
+      };
+    }
+
+    function inferAreaKind(kind) {
+      if (kind === "adminPage") return "adminArea";
+      if (kind === "saveData" || kind === "referenceData") return "dbArea";
+      return "publicArea";
+    }
+
+    function defaultStageForKind(kind) {
+      if (kind === "adminPage") return 2;
+      if (kind === "saveData" || kind === "referenceData") return 3;
+      return 1;
+    }
+
+    function nodeIcon(kind, name) {
+      if (kind === "publicPage" && /トップ|ホーム/.test(name || "")) return "home";
+      if (kind === "publicPage" || kind === "adminPage") return /一覧/.test(name || "") ? "list" : "page";
+      if (kind === "modal") return "modal";
+      if (kind === "popup") return "popup";
+      if (kind === "saveData" || kind === "referenceData") return "db";
+      return "page";
+    }
+
+    function pushHistory() {
+      const snapshot = JSON.stringify(stripRuntimeState(state));
+      if (historyStack[historyStack.length - 1] !== snapshot) {
+        historyStack.push(snapshot);
+      }
+      if (historyStack.length > 80) historyStack.shift();
+      futureStack = [];
+    }
+
+    function stripRuntimeState(value) {
+      const copy = deepClone(value);
+      delete copy.selectedId;
+      delete copy.selectedEdgeId;
+      delete copy.connectMode;
+      delete copy.connectFromId;
+      delete copy.drawKind;
+      return copy;
+    }
+
+    function restoreFromSnapshot(snapshot) {
+      state = normalizeState(JSON.parse(snapshot));
+      state.screen = "editor";
+      render();
+    }
+
+    function undo() {
+      if (!historyStack.length) return showToast("戻せる履歴がありません。");
+      const current = JSON.stringify(stripRuntimeState(state));
+      futureStack.push(current);
+      const previous = historyStack.pop();
+      restoreFromSnapshot(previous);
+      showToast("1つ前の状態に戻しました。");
+    }
+
+    function redo() {
+      if (!futureStack.length) return showToast("やり直せる履歴がありません。");
+      const current = JSON.stringify(stripRuntimeState(state));
+      historyStack.push(current);
+      const next = futureStack.pop();
+      restoreFromSnapshot(next);
+      showToast("操作をやり直しました。");
+    }
+
+    function setState(nextState, saveHistory = false) {
+      if (saveHistory) pushHistory();
+      state = normalizeState(nextState);
+      render();
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function linesToItems(value, kind) {
+      return String(value || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const parts = line.split("|").map((part) => part.trim());
+          if (kind === "field") return parts[0];
+          return {
+            id: uid(kind),
+            kind,
+            fileName: parts[0] || "",
+            label: parts[1] || parts[0] || "",
+            role: parts[2] || "",
+            scope: parts[3] === "specific" ? "specific" : "common"
+          };
+        });
+    }
+
+    function itemsToLines(items) {
+      return (items || []).map((item) => {
+        if (typeof item === "string") return item;
+        return [item.fileName, item.label, item.role, item.scope].filter(Boolean).join(" | ");
+      }).join("\n");
+    }
+
+    function linkHintsToLines(hints) {
+      return (hints || []).map((hint) => {
+        if (typeof hint === "string") return hint;
+        return [hint.label, hint.toId].filter(Boolean).join(" -> ");
+      }).join("\n");
+    }
+
+    function linesToLinkHints(value) {
+      return String(value || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [label, toId] = line.split("->").map((part) => part.trim());
+          return { label: label || line, toId: toId || "" };
+        });
+    }
+
+    function getVisibleNodes() {
+      return state.nodes.filter((node) => (node.stageVisibleFrom || 1) <= state.stage);
+    }
+
+    function getNode(id) {
+      return state.nodes.find((node) => node.id === id);
+    }
+
+    function getVisibleEdges() {
+      const visibleIds = new Set(getVisibleNodes().map((node) => node.id));
+      return state.edges.filter((edge) => visibleIds.has(edge.fromId) && visibleIds.has(edge.toId));
+    }
+
+    function centerOf(node) {
+      return {
+        x: node.x + node.width / 2,
+        y: node.y + node.height / 2
+      };
+    }
+
+    function isPageKind(kind) {
+      return kind === "publicPage" || kind === "adminPage" || kind === "modal" || kind === "popup";
+    }
+
+    function edgeAllowed(fromNode, toNode, type) {
+      if (!fromNode || !toNode) return { ok: false, message: "接続元または接続先が見つかりません。" };
+      if (fromNode.id === toNode.id) return { ok: false, message: "同じ要素どうしは接続できません。" };
+      if (type === "navigate") {
+        const fromIsPage = isPageKind(fromNode.kind);
+        const toIsPage = isPageKind(toNode.kind);
+        if (fromIsPage && toIsPage) return { ok: true };
+        return { ok: false, message: "ページ導線はページ、モーダル、ポップアップ間で使います。" };
+      }
+      if (type === "save") {
+        if (isPageKind(fromNode.kind) && toNode.kind === "saveData") return { ok: true };
+        return { ok: false, message: "保存はページ側から保存データ項目へ接続します。" };
+      }
+      if (type === "reference") {
+        if (fromNode.kind === "referenceData" && isPageKind(toNode.kind)) return { ok: true };
+        return { ok: false, message: "参照は参照データ項目からページ側へ接続します。" };
+      }
+      return { ok: false, message: "接続種別が不明です。" };
+    }
+
+    function getWarnings() {
+      const warnings = [];
+      state.nodes.forEach((node) => {
+        if ((node.stageVisibleFrom || 1) > state.stage) return;
+        if (!node.name?.trim()) warnings.push(`${node.id}: 名前が未入力です。`);
+        if (isPageKind(node.kind) && !node.htmlFile?.trim()) warnings.push(`${node.name || node.id}: htmlファイル名が未入力です。`);
+        if ((node.kind === "modal" || node.kind === "popup") && !node.linkedParentId) warnings.push(`${node.name || node.id}: 親ページが未設定です。`);
+        if (isPageKind(node.kind) && (!node.cssItems || node.cssItems.length === 0)) warnings.push(`${node.name || node.id}: CSS未登録です。`);
+        if (isPageKind(node.kind) && (!node.jsItems || node.jsItems.length === 0)) warnings.push(`${node.name || node.id}: JS未登録です。`);
+        if (state.stage === 1 && node.kind === "adminPage") warnings.push(`${node.name}: STEP1では管理ページは未開放です。`);
+        if (state.stage < 3 && (node.kind === "saveData" || node.kind === "referenceData")) warnings.push(`${node.name}: DB項目はSTEP3で扱います。`);
+      });
+      state.edges.forEach((edge) => {
+        const from = getNode(edge.fromId);
+        const to = getNode(edge.toId);
+        const allowed = edgeAllowed(from, to, edge.relationType);
+        if (!allowed.ok) warnings.push(`${edge.label || edge.id}: ${allowed.message}`);
+      });
+      const duplicateKeys = {};
+      state.edges.forEach((edge) => {
+        const key = `${edge.fromId}-${edge.toId}-${edge.relationType}`;
+        duplicateKeys[key] = (duplicateKeys[key] || 0) + 1;
+      });
+      Object.values(duplicateKeys).forEach((count) => {
+        if (count > 2) warnings.push("同じ要素に対する重複接続が多くなっています。");
+      });
+      return warnings.slice(0, 8);
+    }
+
+    function render() {
+      if (state.screen === "top") renderTop();
+      else renderEditor();
+    }
+
+    function renderTop() {
+      app.innerHTML = `
+        <div class="top-shell">
+          <header class="top-header">
+            <div class="brand">
+              <span class="logo">${svgIcon("logo")}</span>
+              <h1 class="brand-title">関係図整理ツール</h1>
+            </div>
+            <div class="top-actions">
+              <button class="btn" data-action="load-json">${iconHtml("folder")}保存データを読み込む</button>
+              <button class="btn" data-action="open-samples">${iconHtml("spark")}サンプルから始める</button>
+              <button class="btn" data-action="open-help">${iconHtml("help")}ヘルプ / 使い方</button>
+            </div>
+          </header>
+          <main class="top-main">
+            <section class="hero">
+              <div>
+                <h2>どの段階から始めますか？</h2>
+                <p>サイトの整理を、公開ページから管理ページ、データベース接続まで<br>3つのステップで段階的に進められます。</p>
+              </div>
+              <div class="hero-visual">
+                ${renderMiniVisual("orange", "公開ページ", "globe")}
+                ${renderMiniVisual("blue", "管理ページ", "lock")}
+                ${renderMiniVisual("green", "DB接続", "db")}
+              </div>
+            </section>
+            <section class="start-cards">
+              ${renderStartCard(1, "orange", "最初から始める", "公開ページのサイトマップと<br>CSS / JS の関係から整理します。", ["公開ページ", "CSS", "JavaScript"])}
+              ${renderStartCard(2, "blue", "公開ページのサイトマップは完成している", "管理ページのサイトマップと<br>CSS / JS の関係を追加します。", ["管理ページ", "CSS", "JavaScript"])}
+              ${renderStartCard(3, "green", "公開ページ / 管理ページのサイトマップは完成している", "データベースの保存・参照関係を整理し、<br>全体のつながりを可視化します。", ["DB接続", "保存", "参照"])}
+            </section>
+            <section class="flow-card">
+              <div class="flow-steps">
+                ${renderFlowStep("orange", "STEP1: 公開ページ整理", "公開ページのサイトマップと<br>CSS / JSの関係を整理します。", "globe")}
+                ${renderFlowStep("blue", "STEP2: 管理ページ追加", "管理ページのサイトマップと<br>CSS / JSの関係を追加します。", "lock")}
+                ${renderFlowStep("green", "STEP3: DB接続整理", "データベースの保存・参照関係を整理し、<br>全体のつながりを可視化します。", "db")}
+              </div>
+              <aside class="recommend-card">
+                <h3>こんな方におすすめ</h3>
+                <ul>
+                  <li>サイトの全体構成やつながりを整理したい方</li>
+                  <li>引き継ぎや運用のドキュメントを作りたい方</li>
+                  <li>システム改修やリニューアル前に現状を把握したい方</li>
+                </ul>
+              </aside>
+            </section>
+          </main>
+          <footer class="top-footer">
+            <span>データはブラウザ内で編集できます。外部へ送信されることはありません。</span>
+            <span>ローカル単体HTML</span>
+          </footer>
+        </div>
+      `;
+      bindTopEvents();
+    }
+
+    function renderMiniVisual(color, title, icon) {
+      return `
+        <div class="visual-panel ${color}">
+          <h3>${iconHtml(icon)}${title}</h3>
+          <div class="mini-map">
+            <svg class="mini-lines" viewBox="0 0 180 96" aria-hidden="true">
+              <path d="M90 22 V54 M90 54 H34 M90 54 H90 M90 54 H146" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#miniArrow)"></path>
+            </svg>
+            <span class="mini-box root"></span>
+            <span class="mini-box a"></span>
+            <span class="mini-box b"></span>
+            <span class="mini-box c"></span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStartCard(stage, color, title, body, tags) {
+      const icon = stage === 1 ? "globe" : stage === 2 ? "lock" : "db";
+      return `
+        <article class="start-card ${color}">
+          <div class="start-head"><span class="step-number">${stage}</span><span>${title}</span></div>
+          <div class="start-body">
+            <div class="card-icon">${svgIcon(icon)}</div>
+            <div>
+              <p>${body}</p>
+              <div class="tag-list">${tags.map((tag) => `<span class="tag ${tag === "JavaScript" || tag === "CSS" ? "purple" : color}">${tag}</span>`).join("")}</div>
+            </div>
+          </div>
+          <button class="btn primary-${color}" data-action="start-stage" data-stage="${stage}">この段階から始める <span aria-hidden="true">›</span></button>
+        </article>
+      `;
+    }
+
+    function renderFlowStep(color, title, text, icon) {
+      return `
+        <div class="flow-step" style="color: var(--${color});">
+          <div class="flow-mark">${svgIcon(icon)}</div>
+          <h3>${title}</h3>
+          <p>${text}</p>
+        </div>
+      `;
+    }
+
+    function bindTopEvents() {
+      app.querySelectorAll("[data-action='start-stage']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const stage = Number(button.dataset.stage);
+          pushHistory();
+          state = createSampleData(stage, "corporate");
+          state.screen = "editor";
+          historyStack = [];
+          futureStack = [];
+          render();
+        });
+      });
+      app.querySelector("[data-action='load-json']").addEventListener("click", () => fileInput.click());
+      app.querySelector("[data-action='open-samples']").addEventListener("click", openSamplesModal);
+      app.querySelector("[data-action='open-help']").addEventListener("click", openHelpModal);
+    }
+
+    function renderEditor() {
+      const warnings = getWarnings();
+      const counts = getCounts();
+      app.innerHTML = `
+        <div class="editor-shell stage-${state.stage}">
+          <header class="editor-header">
+            <div class="brand">
+              <button class="logo" data-action="go-top" title="TOPへ戻る">${svgIcon("logo")}</button>
+              <h1 class="brand-title">関係図整理ツール</h1>
+            </div>
+            <nav class="toolbar" aria-label="操作バー">
+              <div class="toolbar-group">
+                <button class="btn" data-action="new">${iconHtml("plus")}新規作成</button>
+                <button class="btn" data-action="save-json">${iconHtml("save")}保存</button>
+                <button class="btn" data-action="load-json">${iconHtml("folder")}読み込み</button>
+                <button class="btn" data-action="export-json">${iconHtml("upload")}書き出し</button>
+              </div>
+              <div class="toolbar-group">
+                <button class="btn" data-action="undo">Undo</button>
+                <button class="btn" data-action="redo">Redo</button>
+                <button class="btn" data-action="auto-arrange">${iconHtml("spark")}全体整列</button>
+              </div>
+              <div class="toolbar-group">
+                <button class="btn ${state.viewMode === "simple" ? "ghost-orange" : ""}" data-action="view-simple">${iconHtml("clock")}かんたん表示</button>
+                <button class="btn ${state.viewMode === "detail" ? "ghost-blue" : ""}" data-action="view-detail">${iconHtml("table")}詳細表示</button>
+              </div>
+              <div class="toolbar-group">
+                <button class="btn" data-action="open-help">${iconHtml("help")}ヘルプ</button>
+                <button class="btn ghost-purple" data-action="ai-mode" data-mode="consult">${iconHtml("spark")}AIに相談</button>
+                <button class="btn ghost-pink" data-action="ai-mode" data-mode="scaffold">${iconHtml("spark")}AIにひな形を作ってもらう</button>
+                <button class="btn ghost-blue" data-action="ai-mode" data-mode="final">${iconHtml("page")}完成品をAIに出力</button>
+              </div>
+            </nav>
+            <div class="stage-badge">
+              <div>
+                <small>現在の段階:</small>
+                <span class="stage-label">STEP${state.stage}</span>
+              </div>
+              <strong class="stage-title">${STAGE_NAMES[state.stage]}</strong>
+            </div>
+          </header>
+          <main class="editor-main">
+            ${renderLeftPanel()}
+            ${renderCanvas()}
+            ${renderRightPanel(warnings)}
+          </main>
+          <footer class="status-bar">
+            <div class="status-left">
+              <span>プロジェクト名:</span>
+              <span class="project-name-inline">${escapeHtml(state.projectName || "未保存プロジェクト")} <button class="btn small icon-only" data-action="edit-project" title="プロジェクト名を変更">${iconHtml("text")}</button></span>
+            </div>
+            <div class="status-center">${renderInlineLegend()}</div>
+            <div class="status-right">
+              <span>要素数: ${counts.total}（ページ: ${counts.pages} / データ: ${counts.data} / 接続線: ${counts.edges}）</span>
+              ${warnings.length ? `<span title="${escapeHtml(warnings.join("\n"))}">警告: ${warnings.length}</span>` : `<span>警告なし</span>`}
+            </div>
+          </footer>
+        </div>
+      `;
+      bindEditorEvents();
+      renderEdges();
+    }
+
+    function renderLeftPanel() {
+      const canAdmin = state.stage >= 2;
+      const canDb = state.stage >= 3;
+      return `
+        <aside class="side-panel">
+          <div class="panel-scroll">
+            <h2 class="panel-title">追加パネル</h2>
+            <p class="panel-caption">ボタンで追加、または「ドラッグ作成」を選んでキャンバス上に箱を描けます。</p>
+            <div class="tool-list">
+              <button class="tool-btn orange" data-action="add-node" data-kind="publicPage">${iconHtml("page")}公開ページを追加</button>
+              <button class="tool-btn blue" data-action="add-node" data-kind="adminPage" ${canAdmin ? "" : "disabled"}>${iconHtml("lock")}管理ページを追加</button>
+              <button class="tool-btn orange" data-action="add-node" data-kind="modal">${iconHtml("modal")}モーダル / ポップアップを追加</button>
+              <button class="tool-btn green" data-action="add-node" data-kind="saveData" ${canDb ? "" : "disabled"}>${iconHtml("db")}保存データ項目を追加</button>
+              <button class="tool-btn green" data-action="add-node" data-kind="referenceData" ${canDb ? "" : "disabled"}>${iconHtml("db")}参照データ項目を追加</button>
+              <button class="tool-btn purple ${state.connectMode ? "active" : ""}" data-action="toggle-connect">${iconHtml("link")}接続線を追加</button>
+            </div>
+            <div class="field">
+              <label>接続線の種別</label>
+              <select data-action="connection-type">
+                <option value="navigate" ${state.connectionType === "navigate" ? "selected" : ""}>ページ遷移（ナビゲーション）</option>
+                <option value="save" ${state.connectionType === "save" ? "selected" : ""}>保存（登録・更新）</option>
+                <option value="reference" ${state.connectionType === "reference" ? "selected" : ""}>参照（読み込み）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>ドラッグ作成</label>
+              <select data-action="draw-kind">
+                <option value="">使わない</option>
+                <option value="publicPage" ${state.drawKind === "publicPage" ? "selected" : ""}>公開ページ</option>
+                <option value="adminPage" ${state.drawKind === "adminPage" ? "selected" : ""} ${canAdmin ? "" : "disabled"}>管理ページ</option>
+                <option value="modal" ${state.drawKind === "modal" ? "selected" : ""}>モーダル</option>
+                <option value="saveData" ${state.drawKind === "saveData" ? "selected" : ""} ${canDb ? "" : "disabled"}>保存データ</option>
+                <option value="referenceData" ${state.drawKind === "referenceData" ? "selected" : ""} ${canDb ? "" : "disabled"}>参照データ</option>
+              </select>
+            </div>
+            <div class="tool-card">
+              <h3>導線（接続線）の凡例</h3>
+              <p class="legend-item"><span class="legend-line navigate"></span>ページ遷移（リンク）</p>
+              <p class="legend-item"><span class="legend-line save"></span>保存（登録・更新）</p>
+              <p class="legend-item"><span class="legend-line reference"></span>参照（読み込み）</p>
+            </div>
+            <div class="tool-card">
+              <h3>操作のヒント</h3>
+              <ul>
+                <li>要素をドラッグして位置を調整できます</li>
+                <li>右下のつまみでサイズ変更できます</li>
+                <li>接続線モードでは始点、終点の順にクリックします</li>
+                <li>スペースキーを押しながらドラッグで画面を移動できます</li>
+              </ul>
+            </div>
+            <div class="zoom-box">
+              <button class="btn small icon-only" data-action="zoom-out">${iconHtml("zoomOut")}</button>
+              <button class="btn small" data-action="zoom-reset"><span class="zoom-value">${Math.round(state.zoom * 100)}%</span></button>
+              <button class="btn small icon-only" data-action="zoom-in">${iconHtml("zoomIn")}</button>
+              <button class="btn small icon-only ${state.panTool ? "ghost-blue" : ""}" data-action="toggle-pan">${iconHtml("hand")}</button>
+            </div>
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderCanvas() {
+      return `
+        <section class="canvas-panel">
+          <div class="canvas-viewport ${state.panTool ? "panning" : ""}" data-canvas>
+            <div class="workspace" style="transform: translate(${state.panX}px, ${state.panY}px) scale(${state.zoom});">
+              ${renderAreas()}
+              ${renderDbGroups()}
+              ${renderDividers()}
+              <svg class="edge-svg" data-edge-svg viewBox="0 0 ${WORKSPACE.width} ${WORKSPACE.height}">
+                <defs>
+                  <marker id="arrowNavigate" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="${getComputedStyle(document.documentElement).getPropertyValue("--purple").trim() || "#7c4fd6"}"></path>
+                  </marker>
+                  <marker id="arrowSave" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#fb6f1f"></path>
+                  </marker>
+                  <marker id="arrowReference" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="#2577d2"></path>
+                  </marker>
+                </defs>
+              </svg>
+              ${getVisibleNodes().map(renderNode).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAreas() {
+      return Object.values(state.areas).map((area) => {
+        const locked = (area.kind === "adminArea" && state.stage < 2) || (area.kind === "dbArea" && state.stage < 3);
+        const icon = area.kind === "publicArea" ? "globe" : area.kind === "adminArea" ? "lock" : "db";
+        const body = area.kind === "publicArea"
+          ? "一般ユーザーに公開されるページを整理します"
+          : area.kind === "adminArea"
+            ? "管理者向けのページを整理します"
+            : "データベースとの接続情報やテーブル関係を整理します";
+        return `
+          <section class="area ${area.kind}" style="left:${area.x}px; top:${area.y}px; width:${area.width}px; height:${area.height}px;">
+            <div class="area-header">
+              <span class="mini-icon">${svgIcon(icon)}</span>
+              <div>
+                <h2>${escapeHtml(area.title)}</h2>
+                <p>${body}</p>
+              </div>
+            </div>
+            ${locked ? renderLockedArea(area.kind) : ""}
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderLockedArea(kind) {
+      const message = kind === "adminArea"
+        ? { title: "STEP2で開放されます", text: "公開ページの整理が完了したら、STEP2で管理ページの整理を行えるようになります。" }
+        : { title: "STEP3で開放されます", text: "ページ整理が完了したら、STEP3でDB接続エリアを行えるようになります。" };
+      return `
+        <div class="locked-area">
+          <div class="locked-area-inner">
+            <div class="lock">${svgIcon(kind === "adminArea" ? "lock" : "db")}</div>
+            <strong>${message.title}</strong>
+            <p>${message.text}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDbGroups() {
+      if (state.stage < 3) return "";
+      const dbArea = state.areas.dbArea;
+      const groupY = dbArea.y + 76;
+      const groupH = dbArea.height - 96;
+      const gap = 22;
+      const groupW = (dbArea.width - 72 - gap) / 2;
+      return `
+        <div class="db-group" style="left:${dbArea.x + 24}px; top:${groupY}px; width:${groupW}px; height:${groupH}px;">
+          <h3>保存データ（登録・更新されるデータ）</h3>
+          <p>フォームや管理画面から登録・更新されるデータです。</p>
+        </div>
+        <div class="db-group" style="left:${dbArea.x + 48 + groupW}px; top:${groupY}px; width:${groupW}px; height:${groupH}px;">
+          <h3>参照データ（読み込み専用のデータ）</h3>
+          <p>ページ表示や選択肢などで参照するデータです。</p>
+        </div>
+      `;
+    }
+
+    function renderDividers() {
+      const publicArea = state.areas.publicArea;
+      const adminArea = state.areas.adminArea;
+      const dbArea = state.areas.dbArea;
+      const topY = Math.min(publicArea.y, adminArea.y) + 8;
+      const topHeight = Math.max(publicArea.height, adminArea.height) - 16;
+      return `
+        <div class="area-divider vertical" data-divider="vertical"
+          title="公開ページエリアと管理ページエリアの幅を調整"
+          style="left:${adminArea.x - 20}px; top:${topY}px; height:${topHeight}px;"></div>
+        <div class="area-divider horizontal" data-divider="horizontal"
+          title="上段エリアとDB接続エリアの高さを調整"
+          style="left:${dbArea.x + 8}px; top:${dbArea.y - 20}px; width:${dbArea.width - 16}px;"></div>
+      `;
+    }
+
+    function renderNode(node) {
+      const selected = state.selectedId === node.id;
+      const source = state.connectFromId === node.id;
+      const chips = getNodeChips(node);
+      return `
+        <article class="node ${node.kind} ${selected ? "selected" : ""} ${source ? "connect-source" : ""}"
+          data-node-id="${node.id}"
+          style="left:${node.x}px; top:${node.y}px; width:${node.width}px; height:${node.height}px;">
+          <div class="node-inner">
+            <div class="node-top">
+              <span class="node-icon">${svgIcon(nodeIcon(node.kind, node.name))}</span>
+              <div>
+                <h3 class="node-title">${escapeHtml(node.name || KIND_LABELS[node.kind])}</h3>
+                <div class="node-file">${escapeHtml(node.kind === "saveData" || node.kind === "referenceData" ? node.tableName || "table未設定" : node.htmlFile || "html未設定")}</div>
+              </div>
+              <span class="node-menu">::</span>
+            </div>
+            <p class="node-description">${escapeHtml(node.description || "説明を右パネルで入力できます。")}</p>
+            ${state.viewMode === "detail" ? renderNodeDetail(node) : `<div class="node-tags">${chips.map((chip) => `<span class="node-chip">${escapeHtml(chip)}</span>`).join("")}</div>`}
+          </div>
+          <span class="resize-handle" data-resize-id="${node.id}"></span>
+        </article>
+      `;
+    }
+
+    function getNodeChips(node) {
+      if (node.kind === "saveData" || node.kind === "referenceData") {
+        const fields = node.fields?.length ? node.fields.slice(0, 5) : ["id", "..."];
+        return fields;
+      }
+      const out = [];
+      out.push(`${countEdgesFor(node.id, "from")}導線`);
+      out.push(`CSS ${node.cssItems?.length || 0}`);
+      out.push(`JS ${node.jsItems?.length || 0}`);
+      const saveCount = state.edges.filter((edge) => edge.fromId === node.id && edge.relationType === "save").length;
+      const refCount = state.edges.filter((edge) => edge.toId === node.id && edge.relationType === "reference").length;
+      if (state.stage >= 3) out.push(`保存${saveCount}/参照${refCount}`);
+      return out;
+    }
+
+    function renderNodeDetail(node) {
+      if (node.kind === "saveData" || node.kind === "referenceData") {
+        return `
+          <div class="node-detail">
+            <div><strong>テーブル:</strong> ${escapeHtml(node.tableName || "未設定")}</div>
+            <div><strong>項目:</strong> ${escapeHtml((node.fields || []).slice(0, 5).join(", ") || "未設定")}</div>
+            <div><strong>メモ:</strong> ${escapeHtml(node.notes || "なし")}</div>
+          </div>
+        `;
+      }
+      return `
+        <div class="node-detail">
+          <div><strong>html箱:</strong> ${escapeHtml(node.title || node.htmlFile || "未設定")}</div>
+          <div><strong>CSS:</strong> ${escapeHtml((node.cssItems || []).map((item) => item.fileName).join(", ") || "CSS未登録")}</div>
+          <div><strong>JS:</strong> ${escapeHtml((node.jsItems || []).map((item) => item.fileName).join(", ") || "JS未登録")}</div>
+          <div><strong>リンク:</strong> ${escapeHtml(getEdgesFrom(node.id).map((edge) => edge.label).join(", ") || "未登録")}</div>
+          <div><strong>DB:</strong> ${escapeHtml(getDbHints(node).join(", ") || "未登録")}</div>
+          <div><strong>メモ:</strong> ${escapeHtml(node.notes || "なし")}</div>
+        </div>
+      `;
+    }
+
+    function countEdgesFor(nodeId, direction) {
+      return state.edges.filter((edge) => direction === "from" ? edge.fromId === nodeId : edge.toId === nodeId).length;
+    }
+
+    function getEdgesFrom(nodeId) {
+      return state.edges.filter((edge) => edge.fromId === nodeId);
+    }
+
+    function getDbHints(node) {
+      const saveEdges = state.edges.filter((edge) => edge.fromId === node.id && edge.relationType === "save").map((edge) => getNode(edge.toId)?.name || edge.label);
+      const refEdges = state.edges.filter((edge) => edge.toId === node.id && edge.relationType === "reference").map((edge) => getNode(edge.fromId)?.name || edge.label);
+      return [...saveEdges.map((name) => `保存:${name}`), ...refEdges.map((name) => `参照:${name}`), ...(node.dbHints || [])];
+    }
+
+    function renderRightPanel(warnings) {
+      const selectedNode = getNode(state.selectedId);
+      const selectedEdge = state.edges.find((edge) => edge.id === state.selectedEdgeId);
+      return `
+        <aside class="right-panel">
+          <div class="right-header">
+            <h2>${selectedEdge ? "接続線詳細" : selectedNode ? "ページ詳細" : "詳細・出力パネル"}</h2>
+            <button class="btn small" data-action="clear-selection">選択をクリア</button>
+          </div>
+          <div class="panel-scroll">
+            ${selectedEdge ? renderEdgeForm(selectedEdge) : selectedNode ? renderNodeForm(selectedNode) : renderEmptyGuide()}
+            ${warnings.length ? `<div class="warning-box"><strong>確認したい点</strong>${warnings.map((warning) => `<div>${escapeHtml(warning)}</div>`).join("")}</div>` : ""}
+            ${renderAiPanel()}
+          </div>
+        </aside>
+      `;
+    }
+
+    function renderEmptyGuide() {
+      return `
+        <div class="empty-guide">
+          <strong>要素を選択してください</strong>
+          <span>キャンバス上のページ、モーダル、DB項目、または接続線を選択すると、ここで詳細を編集できます。</span>
+          <span>左の追加パネルから要素を増やし、接続線モードでつながりを整理してください。</span>
+        </div>
+      `;
+    }
+
+    function renderNodeForm(node) {
+      const isDb = node.kind === "saveData" || node.kind === "referenceData";
+      const pageOptions = state.nodes.filter((item) => isPageKind(item.kind) && item.id !== node.id)
+        .map((item) => `<option value="${item.id}" ${node.linkedParentId === item.id ? "selected" : ""}>${escapeHtml(item.name)} (${escapeHtml(item.htmlFile || item.id)})</option>`).join("");
+      return `
+        <div class="form-section">
+          <h3 class="form-title">${iconHtml(isDb ? "db" : "page")}${isDb ? "データ情報" : "ページ情報"}</h3>
+          <div class="field">
+            <label>種類</label>
+            <select data-field="kind">
+              <option value="publicPage" ${node.kind === "publicPage" ? "selected" : ""}>公開ページ</option>
+              <option value="adminPage" ${node.kind === "adminPage" ? "selected" : ""}>管理ページ</option>
+              <option value="modal" ${node.kind === "modal" ? "selected" : ""}>モーダル</option>
+              <option value="popup" ${node.kind === "popup" ? "selected" : ""}>ポップアップ</option>
+              <option value="saveData" ${node.kind === "saveData" ? "selected" : ""}>保存データ</option>
+              <option value="referenceData" ${node.kind === "referenceData" ? "selected" : ""}>参照データ</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>${isDb ? "データ項目名" : "名前"}</label>
+            <input data-field="name" value="${escapeHtml(node.name)}" placeholder="例）トップページ">
+          </div>
+          ${isDb ? `
+            <div class="field">
+              <label>テーブル名</label>
+              <input data-field="tableName" value="${escapeHtml(node.tableName)}" placeholder="例）contacts">
+            </div>
+          ` : `
+            <div class="field">
+              <label>htmlファイル名</label>
+              <input data-field="htmlFile" value="${escapeHtml(node.htmlFile)}" placeholder="例）index.html">
+            </div>
+            <div class="field">
+              <label>タイトル（title）</label>
+              <input data-field="title" value="${escapeHtml(node.title)}" placeholder="例）株式会社〇〇 | トップページ">
+            </div>
+          `}
+          <div class="field">
+            <label>内容説明</label>
+            <textarea data-field="description" placeholder="この要素の目的や内容を入力してください">${escapeHtml(node.description)}</textarea>
+          </div>
+          ${node.kind === "modal" || node.kind === "popup" ? `
+            <div class="field">
+              <label>親ページ</label>
+              <select data-field="linkedParentId">
+                <option value="">未設定</option>
+                ${pageOptions}
+              </select>
+            </div>
+          ` : ""}
+        </div>
+        <div class="form-section">
+          <h3 class="form-title">${iconHtml("link")}リンク導線一覧</h3>
+          <div class="field">
+            <label>このページからのリンクや遷移先</label>
+            <textarea data-field="linkHints" data-format="linkHints" placeholder="例）一覧へ -> node_id">${escapeHtml(linkHintsToLines(node.linkHints))}</textarea>
+          </div>
+        </div>
+        ${isDb ? `
+          <div class="form-section">
+            <h3 class="form-title">${iconHtml("table")}DB項目</h3>
+            <div class="field">
+              <label>項目名（1行に1つ）</label>
+              <textarea data-field="fields" data-format="field">${escapeHtml((node.fields || []).join("\n"))}</textarea>
+            </div>
+          </div>
+        ` : `
+          <div class="form-section">
+            <h3 class="form-title">${iconHtml("table")}CSS一覧</h3>
+            <div class="field">
+              <label>CSS（file | label | role | common/specific）</label>
+              <textarea data-field="cssItems" data-format="css">${escapeHtml(itemsToLines(node.cssItems))}</textarea>
+            </div>
+          </div>
+          <div class="form-section">
+            <h3 class="form-title">${iconHtml("table")}JS一覧</h3>
+            <div class="field">
+              <label>JS（file | label | role | common/specific）</label>
+              <textarea data-field="jsItems" data-format="js">${escapeHtml(itemsToLines(node.jsItems))}</textarea>
+            </div>
+          </div>
+        `}
+        <div class="form-section">
+          <h3 class="form-title">${iconHtml("text")}メモ</h3>
+          <div class="field">
+            <label>自由メモ</label>
+            <textarea data-field="notes">${escapeHtml(node.notes)}</textarea>
+          </div>
+          <div class="field-grid">
+            <button class="btn small" data-action="duplicate-selected">${iconHtml("copy")}複製</button>
+            <button class="btn small" data-action="delete-selected">${iconHtml("trash")}削除</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderEdgeForm(edge) {
+      return `
+        <div class="form-section">
+          <h3 class="form-title">${iconHtml("link")}接続情報</h3>
+          <div class="field">
+            <label>接続種別</label>
+            <select data-edge-field="relationType">
+              <option value="navigate" ${edge.relationType === "navigate" ? "selected" : ""}>ページ遷移</option>
+              <option value="save" ${edge.relationType === "save" ? "selected" : ""}>保存</option>
+              <option value="reference" ${edge.relationType === "reference" ? "selected" : ""}>参照</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>ラベル</label>
+            <input data-edge-field="label" value="${escapeHtml(edge.label)}" placeholder="例）一覧へ">
+          </div>
+          <div class="field">
+            <label>説明</label>
+            <textarea data-edge-field="description">${escapeHtml(edge.description)}</textarea>
+          </div>
+          <div class="field-grid">
+            <button class="btn small" data-action="flip-edge">向きを反転</button>
+            <button class="btn small" data-action="delete-selected">${iconHtml("trash")}削除</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAiPanel() {
+      const mode = state.aiMode || "consult";
+      return `
+        <section class="ai-card">
+          <h3>${iconHtml("spark")}AIアシスト（いつでも利用できます）</h3>
+          <div class="ai-tabs">
+            <button class="btn small ghost-purple ai-tab ${mode === "consult" ? "active" : ""}" data-action="ai-mode" data-mode="consult">AIに相談</button>
+            <button class="btn small ghost-pink ai-tab ${mode === "scaffold" ? "active" : ""}" data-action="ai-mode" data-mode="scaffold">AIにひな形を作ってもらう</button>
+            <button class="btn small ghost-blue ai-tab ${mode === "final" ? "active" : ""}" data-action="ai-mode" data-mode="final">完成品をAIに出力</button>
+          </div>
+          <div class="field">
+            <label>${mode === "consult" ? "相談内容" : mode === "scaffold" ? "作りたいもの" : "このあとやりたいこと"}</label>
+            <textarea data-action="ai-input" placeholder="例）不足しているページや導線を確認したい">${escapeHtml(state.aiInput || "")}</textarea>
+          </div>
+          <div class="field-grid">
+            <button class="btn small ghost-purple" data-action="generate-prompt">プロンプトを生成</button>
+            <button class="btn small" data-action="clear-prompt">クリア</button>
+          </div>
+          <div class="field">
+            <label>出力プレビュー</label>
+            <div class="prompt-output">${escapeHtml(state.aiOutput || "ここに生成結果が表示されます。")}</div>
+          </div>
+          <div class="field-grid">
+            <button class="btn small" data-action="copy-prompt">${iconHtml("copy")}コピー</button>
+            <button class="btn small" data-action="download-prompt">${iconHtml("upload")}txt保存</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderInlineLegend() {
+      return `
+        <span class="legend-inline">
+          <span class="legend-item"><span class="legend-line navigate"></span>ページ遷移</span>
+          <span class="legend-item"><span class="legend-line save"></span>保存</span>
+          <span class="legend-item"><span class="legend-line reference"></span>参照</span>
+        </span>
+      `;
+    }
+
+    function getCounts() {
+      const nodes = getVisibleNodes();
+      return {
+        total: nodes.length,
+        pages: nodes.filter((node) => isPageKind(node.kind)).length,
+        data: nodes.filter((node) => node.kind === "saveData" || node.kind === "referenceData").length,
+        edges: getVisibleEdges().length
+      };
+    }
+
+    function renderEdges() {
+      const svg = app.querySelector("[data-edge-svg]");
+      if (!svg) return;
+      const defs = svg.querySelector("defs")?.outerHTML || "";
+      const edges = getVisibleEdges().map((edge) => {
+        const from = getNode(edge.fromId);
+        const to = getNode(edge.toId);
+        if (!from || !to) return "";
+        const a = centerOf(from);
+        const b = centerOf(to);
+        const dx = Math.max(80, Math.abs(b.x - a.x) * 0.5);
+        const c1x = a.x + (b.x >= a.x ? dx : -dx);
+        const c2x = b.x - (b.x >= a.x ? dx : -dx);
+        const path = `M ${a.x} ${a.y} C ${c1x} ${a.y}, ${c2x} ${b.y}, ${b.x} ${b.y}`;
+        const marker = edge.relationType === "save" ? "arrowSave" : edge.relationType === "reference" ? "arrowReference" : "arrowNavigate";
+        const selected = state.selectedEdgeId === edge.id ? "selected" : "";
+        const labelX = (a.x + b.x) / 2;
+        const labelY = (a.y + b.y) / 2 - 8;
+        return `
+          <path class="edge-hit" data-edge-id="${edge.id}" d="${path}"></path>
+          <path class="edge-line ${edge.relationType} ${selected}" d="${path}" marker-end="url(#${marker})"></path>
+          <text class="edge-label" x="${labelX}" y="${labelY}">${escapeHtml(edge.label || RELATION_LABELS[edge.relationType])}</text>
+        `;
+      }).join("");
+      svg.innerHTML = defs + edges;
+      svg.querySelectorAll("[data-edge-id]").forEach((path) => {
+        path.addEventListener("pointerdown", (event) => {
+          event.stopPropagation();
+          selectEdge(path.dataset.edgeId);
+        });
+      });
+    }
+
+    function bindEditorEvents() {
+      app.querySelectorAll("[data-action]").forEach((el) => {
+        const action = el.dataset.action;
+        if (["ai-input", "connection-type", "draw-kind"].includes(action)) return;
+        el.addEventListener("click", (event) => handleAction(event, action, el));
+      });
+
+      app.querySelector("[data-action='connection-type']")?.addEventListener("change", (event) => {
+        state.connectionType = event.target.value;
+      });
+
+      app.querySelector("[data-action='draw-kind']")?.addEventListener("change", (event) => {
+        state.drawKind = event.target.value || null;
+        showToast(state.drawKind ? "キャンバス上をドラッグして箱を作成できます。" : "ドラッグ作成を解除しました。");
+      });
+
+      app.querySelector("[data-action='ai-input']")?.addEventListener("input", (event) => {
+        state.aiInput = event.target.value;
+      });
+
+      app.querySelectorAll("[data-field]").forEach((field) => {
+        field.addEventListener("change", () => updateSelectedNodeFromField(field));
+      });
+
+      app.querySelectorAll("[data-edge-field]").forEach((field) => {
+        field.addEventListener("change", () => updateSelectedEdgeFromField(field));
+      });
+
+      app.querySelectorAll("[data-node-id]").forEach((nodeEl) => {
+        nodeEl.addEventListener("pointerdown", startNodePointer);
+        nodeEl.addEventListener("click", (event) => {
+          event.stopPropagation();
+          handleNodeClick(nodeEl.dataset.nodeId);
+        });
+      });
+
+      app.querySelectorAll("[data-resize-id]").forEach((handle) => {
+        handle.addEventListener("pointerdown", startResizePointer);
+      });
+
+      app.querySelectorAll("[data-divider]").forEach((divider) => {
+        divider.addEventListener("pointerdown", startDividerPointer);
+      });
+
+      const viewport = app.querySelector("[data-canvas]");
+      viewport?.addEventListener("pointerdown", startCanvasPointer);
+      viewport?.addEventListener("wheel", handleWheel, { passive: false });
+    }
+
+    function handleAction(event, action, el) {
+      event.preventDefault();
+      const handlers = {
+        "go-top": () => { state.screen = "top"; render(); },
+        "new": () => newDocument(),
+        "save-json": () => saveJson(),
+        "export-json": () => saveJson(),
+        "load-json": () => fileInput.click(),
+        "undo": () => undo(),
+        "redo": () => redo(),
+        "auto-arrange": () => autoArrange(),
+        "view-simple": () => setViewMode("simple"),
+        "view-detail": () => setViewMode("detail"),
+        "open-help": () => openHelpModal(),
+        "add-node": () => addNode(el.dataset.kind),
+        "toggle-connect": () => toggleConnectMode(),
+        "zoom-in": () => updateZoom(0.1),
+        "zoom-out": () => updateZoom(-0.1),
+        "zoom-reset": () => resetZoom(),
+        "toggle-pan": () => { state.panTool = !state.panTool; render(); },
+        "clear-selection": () => clearSelection(),
+        "delete-selected": () => deleteSelected(),
+        "duplicate-selected": () => duplicateSelected(),
+        "flip-edge": () => flipSelectedEdge(),
+        "ai-mode": () => setAiMode(el.dataset.mode),
+        "generate-prompt": () => generatePrompt(),
+        "copy-prompt": () => copyPrompt(),
+        "download-prompt": () => downloadPrompt(),
+        "clear-prompt": () => { state.aiOutput = ""; lastGeneratedPrompt = ""; render(); },
+        "edit-project": () => editProjectName()
+      };
+      handlers[action]?.();
+    }
+
+    function newDocument() {
+      if (!window.confirm("現在の内容を閉じて、新規作成しますか？保存していない内容は失われます。")) return;
+      historyStack = [];
+      futureStack = [];
+      state = createBaseState(state.stage);
+      state.projectName = "新規プロジェクト";
+      render();
+    }
+
+    function setViewMode(mode) {
+      pushHistory();
+      state.viewMode = mode;
+      render();
+    }
+
+    function setAiMode(mode) {
+      state.aiMode = mode;
+      const rightPanel = app.querySelector(".right-panel");
+      if (rightPanel) render();
+    }
+
+    function toggleConnectMode() {
+      state.connectMode = !state.connectMode;
+      state.connectFromId = null;
+      state.drawKind = null;
+      render();
+      showToast(state.connectMode ? "接続元をクリックしてください。" : "接続線モードを解除しました。");
+    }
+
+    function clearSelection() {
+      state.selectedId = null;
+      state.selectedEdgeId = null;
+      state.connectFromId = null;
+      render();
+    }
+
+    function selectNode(id) {
+      state.selectedId = id;
+      state.selectedEdgeId = null;
+      render();
+    }
+
+    function selectEdge(id) {
+      state.selectedEdgeId = id;
+      state.selectedId = null;
+      render();
+    }
+
+    function handleNodeClick(id) {
+      if (!state.connectMode) {
+        selectNode(id);
+        return;
+      }
+      if (!state.connectFromId) {
+        state.connectFromId = id;
+        state.selectedId = id;
+        render();
+        showToast("接続先をクリックしてください。");
+        return;
+      }
+      if (state.connectFromId === id) {
+        state.connectFromId = null;
+        render();
+        showToast("接続元を選び直してください。");
+        return;
+      }
+      createEdge(state.connectFromId, id, state.connectionType);
+    }
+
+    function createEdge(fromId, toId, type) {
+      const from = getNode(fromId);
+      const to = getNode(toId);
+      const allowed = edgeAllowed(from, to, type);
+      if (!allowed.ok) {
+        showToast(allowed.message);
+        return;
+      }
+      pushHistory();
+      state.edges.push({
+        id: uid("edge"),
+        fromId,
+        toId,
+        relationType: type,
+        label: RELATION_LABELS[type],
+        description: ""
+      });
+      state.connectFromId = null;
+      state.selectedId = null;
+      state.selectedEdgeId = state.edges[state.edges.length - 1].id;
+      render();
+      showToast("接続線を追加しました。");
+    }
+
+    function addNode(kind, rect) {
+      if (kind === "adminPage" && state.stage < 2) return showToast("管理ページはSTEP2で追加できます。");
+      if ((kind === "saveData" || kind === "referenceData") && state.stage < 3) return showToast("DB項目はSTEP3で追加できます。");
+      pushHistory();
+      const areaKind = inferAreaKind(kind);
+      const area = state.areas[areaKind];
+      const count = state.nodes.filter((node) => node.kind === kind).length + 1;
+      const position = rect || nextNodePosition(area, count, kind);
+      const selectedParent = getNode(state.selectedId);
+      const isDb = kind === "saveData" || kind === "referenceData";
+      const node = normalizeNode({
+        id: uid(isDb ? "db" : "node"),
+        kind,
+        areaKind,
+        linkedParentId: (kind === "modal" || kind === "popup") && selectedParent && isPageKind(selectedParent.kind) ? selectedParent.id : "",
+        name: defaultNodeName(kind, count),
+        htmlFile: defaultHtmlFile(kind, count),
+        tableName: isDb ? defaultTableName(kind, count) : "",
+        title: defaultNodeName(kind, count),
+        description: defaultDescription(kind),
+        notes: "",
+        x: position.x,
+        y: position.y,
+        width: position.width,
+        height: position.height,
+        cssItems: isDb ? [] : defaultCss(kind),
+        jsItems: isDb ? [] : defaultJs(kind),
+        fields: isDb ? ["id", "name", "created_at"] : [],
+        stageVisibleFrom: defaultStageForKind(kind)
+      });
+      state.nodes.push(node);
+      state.selectedId = node.id;
+      state.selectedEdgeId = null;
+      state.drawKind = null;
+      render();
+      showToast(`${KIND_LABELS[kind]}を追加しました。`);
+    }
+
+    function nextNodePosition(area, count, kind) {
+      const col = (count - 1) % 3;
+      const row = Math.floor((count - 1) / 3);
+      const db = kind === "saveData" || kind === "referenceData";
+      return {
+        x: area.x + 70 + col * (db ? 185 : 255),
+        y: area.y + 100 + row * (db ? 172 : 148),
+        width: db ? 170 : 238,
+        height: db ? 150 : 126
+      };
+    }
+
+    function defaultNodeName(kind, count) {
+      const names = {
+        publicPage: "新しい公開ページ",
+        adminPage: "新しい管理ページ",
+        modal: "新しいモーダル",
+        popup: "新しいポップアップ",
+        saveData: "保存データ項目",
+        referenceData: "参照データ項目"
+      };
+      return `${names[kind] || "新しい要素"}${count}`;
+    }
+
+    function defaultHtmlFile(kind, count) {
+      const map = {
+        publicPage: `page-${count}.html`,
+        adminPage: `admin/page-${count}.html`,
+        modal: `modal-${count}.html`,
+        popup: `popup-${count}.html`
+      };
+      return map[kind] || "";
+    }
+
+    function defaultTableName(kind, count) {
+      return kind === "saveData" ? `save_table_${count}` : `reference_table_${count}`;
+    }
+
+    function defaultDescription(kind) {
+      const map = {
+        publicPage: "一般ユーザーが閲覧するページです。",
+        adminPage: "管理者が操作するページです。",
+        modal: "親ページから表示されるモーダルです。",
+        popup: "親ページから表示されるポップアップです。",
+        saveData: "登録・更新されるデータです。",
+        referenceData: "表示や選択肢で参照されるデータです。"
+      };
+      return map[kind] || "";
+    }
+
+    function defaultCss(kind) {
+      if (kind === "adminPage") return [{ id: uid("css"), kind: "css", fileName: "admin.css", label: "管理画面CSS", role: "管理ページ共通", scope: "common" }];
+      if (kind === "modal" || kind === "popup") return [{ id: uid("css"), kind: "css", fileName: "modal.css", label: "モーダルCSS", role: "表示調整", scope: "specific" }];
+      return [{ id: uid("css"), kind: "css", fileName: "common.css", label: "共通CSS", role: "ページ全体", scope: "common" }];
+    }
+
+    function defaultJs(kind) {
+      if (kind === "adminPage") return [{ id: uid("js"), kind: "js", fileName: "admin.js", label: "管理画面JS", role: "管理操作", scope: "common" }];
+      if (kind === "modal" || kind === "popup") return [{ id: uid("js"), kind: "js", fileName: "modal.js", label: "モーダルJS", role: "開閉動作", scope: "specific" }];
+      return [{ id: uid("js"), kind: "js", fileName: "common.js", label: "共通JS", role: "共通動作", scope: "common" }];
+    }
+
+    function updateSelectedNodeFromField(field) {
+      const node = getNode(state.selectedId);
+      if (!node) return;
+      pushHistory();
+      const key = field.dataset.field;
+      const format = field.dataset.format;
+      if (format === "css") node[key] = linesToItems(field.value, "css");
+      else if (format === "js") node[key] = linesToItems(field.value, "js");
+      else if (format === "linkHints") node[key] = linesToLinkHints(field.value);
+      else if (format === "field") node[key] = linesToItems(field.value, "field");
+      else {
+        node[key] = field.value;
+        if (key === "kind") {
+          node.areaKind = inferAreaKind(field.value);
+          node.stageVisibleFrom = defaultStageForKind(field.value);
+        }
+      }
+      state.meta.updatedAt = new Date().toISOString();
+      render();
+    }
+
+    function updateSelectedEdgeFromField(field) {
+      const edge = state.edges.find((item) => item.id === state.selectedEdgeId);
+      if (!edge) return;
+      pushHistory();
+      edge[field.dataset.edgeField] = field.value;
+      if (field.dataset.edgeField === "relationType" && !edge.label) edge.label = RELATION_LABELS[field.value];
+      render();
+    }
+
+    function deleteSelected() {
+      if (!state.selectedId && !state.selectedEdgeId) return showToast("削除する要素を選択してください。");
+      pushHistory();
+      if (state.selectedId) {
+        const id = state.selectedId;
+        state.nodes = state.nodes.filter((node) => node.id !== id);
+        state.edges = state.edges.filter((edge) => edge.fromId !== id && edge.toId !== id);
+        state.nodes.forEach((node) => {
+          if (node.linkedParentId === id) node.linkedParentId = "";
+        });
+        state.selectedId = null;
+      }
+      if (state.selectedEdgeId) {
+        state.edges = state.edges.filter((edge) => edge.id !== state.selectedEdgeId);
+        state.selectedEdgeId = null;
+      }
+      render();
+      showToast("選択中の要素を削除しました。");
+    }
+
+    function duplicateSelected() {
+      const node = getNode(state.selectedId);
+      if (!node) return showToast("複製する要素を選択してください。");
+      pushHistory();
+      const copy = deepClone(node);
+      copy.id = uid(node.kind === "saveData" || node.kind === "referenceData" ? "db" : "node");
+      copy.name = `${node.name} コピー`;
+      copy.x += 32;
+      copy.y += 32;
+      copy.cssItems = (copy.cssItems || []).map((item) => ({ ...item, id: uid("css") }));
+      copy.jsItems = (copy.jsItems || []).map((item) => ({ ...item, id: uid("js") }));
+      state.nodes.push(copy);
+      state.selectedId = copy.id;
+      render();
+      showToast("要素を複製しました。");
+    }
+
+    function flipSelectedEdge() {
+      const edge = state.edges.find((item) => item.id === state.selectedEdgeId);
+      if (!edge) return;
+      pushHistory();
+      [edge.fromId, edge.toId] = [edge.toId, edge.fromId];
+      render();
+    }
+
+    function startNodePointer(event) {
+      if (event.target.dataset.resizeId) return;
+      const nodeEl = event.currentTarget;
+      const node = getNode(nodeEl.dataset.nodeId);
+      if (!node || state.connectMode) return;
+      event.stopPropagation();
+      pushHistory();
+      dragState = {
+        type: "node",
+        id: node.id,
+        startX: event.clientX,
+        startY: event.clientY,
+        originalX: node.x,
+        originalY: node.y
+      };
+      nodeEl.setPointerCapture(event.pointerId);
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", endPointerAction, { once: true });
+    }
+
+    function startResizePointer(event) {
+      event.stopPropagation();
+      const node = getNode(event.currentTarget.dataset.resizeId);
+      if (!node) return;
+      pushHistory();
+      dragState = {
+        type: "resize",
+        id: node.id,
+        startX: event.clientX,
+        startY: event.clientY,
+        originalWidth: node.width,
+        originalHeight: node.height
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", endPointerAction, { once: true });
+    }
+
+    function startDividerPointer(event) {
+      event.stopPropagation();
+      pushHistory();
+      const publicArea = state.areas.publicArea;
+      const adminArea = state.areas.adminArea;
+      const dbArea = state.areas.dbArea;
+      dragState = {
+        type: "divider",
+        axis: event.currentTarget.dataset.divider,
+        startX: event.clientX,
+        startY: event.clientY,
+        publicWidth: publicArea.width,
+        publicHeight: publicArea.height,
+        adminX: adminArea.x,
+        adminWidth: adminArea.width,
+        adminHeight: adminArea.height,
+        dbY: dbArea.y,
+        dbHeight: dbArea.height,
+        topRight: adminArea.x + adminArea.width
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", endPointerAction, { once: true });
+    }
+
+    function startCanvasPointer(event) {
+      if (event.target.closest("[data-node-id]") || event.target.closest("[data-edge-id]")) return;
+      state.selectedId = null;
+      state.selectedEdgeId = null;
+      if (state.drawKind) {
+        const point = canvasPoint(event);
+        dragState = {
+          type: "draw",
+          kind: state.drawKind,
+          startX: point.x,
+          startY: point.y,
+          currentX: point.x,
+          currentY: point.y
+        };
+        createDrawPreview(point.x, point.y, 1, 1);
+        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", endPointerAction, { once: true });
+        return;
+      }
+      if (state.panTool || event.buttons === 1 && event.shiftKey) {
+        dragState = {
+          type: "pan",
+          startX: event.clientX,
+          startY: event.clientY,
+          originalX: state.panX,
+          originalY: state.panY
+        };
+        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", endPointerAction, { once: true });
+        return;
+      }
+      render();
+    }
+
+    function handlePointerMove(event) {
+      if (!dragState) return;
+      if (dragState.type === "node") {
+        const node = getNode(dragState.id);
+        if (!node) return;
+        node.x = Math.max(0, dragState.originalX + (event.clientX - dragState.startX) / state.zoom);
+        node.y = Math.max(0, dragState.originalY + (event.clientY - dragState.startY) / state.zoom);
+        updateNodeElement(node);
+        renderEdges();
+      } else if (dragState.type === "resize") {
+        const node = getNode(dragState.id);
+        if (!node) return;
+        node.width = Math.max(150, dragState.originalWidth + (event.clientX - dragState.startX) / state.zoom);
+        node.height = Math.max(96, dragState.originalHeight + (event.clientY - dragState.startY) / state.zoom);
+        updateNodeElement(node);
+        renderEdges();
+      } else if (dragState.type === "pan") {
+        state.panX = dragState.originalX + (event.clientX - dragState.startX);
+        state.panY = dragState.originalY + (event.clientY - dragState.startY);
+        updateWorkspaceTransform();
+      } else if (dragState.type === "divider") {
+        if (dragState.axis === "vertical") {
+          const delta = (event.clientX - dragState.startX) / state.zoom;
+          const newPublicWidth = clamp(dragState.publicWidth + delta, 420, 860);
+          state.areas.publicArea.width = newPublicWidth;
+          state.areas.adminArea.x = state.areas.publicArea.x + newPublicWidth + 24;
+          state.areas.adminArea.width = Math.max(420, dragState.topRight - state.areas.adminArea.x);
+        } else {
+          const delta = (event.clientY - dragState.startY) / state.zoom;
+          const newTopHeight = clamp(dragState.publicHeight + delta, 300, 560);
+          state.areas.publicArea.height = newTopHeight;
+          state.areas.adminArea.height = newTopHeight;
+          state.areas.dbArea.y = state.areas.publicArea.y + newTopHeight + 28;
+          state.areas.dbArea.height = Math.max(230, dragState.dbHeight - delta);
+        }
+        updateAreaElements();
+      } else if (dragState.type === "draw") {
+        const point = canvasPoint(event);
+        dragState.currentX = point.x;
+        dragState.currentY = point.y;
+        const rect = normalizeRect(dragState.startX, dragState.startY, point.x, point.y);
+        createDrawPreview(rect.x, rect.y, rect.width, rect.height);
+      }
+    }
+
+    function endPointerAction() {
+      if (dragState?.type === "draw") {
+        const rect = normalizeRect(dragState.startX, dragState.startY, dragState.currentX, dragState.currentY);
+        removeDrawPreview();
+        if (rect.width > 80 && rect.height > 60) {
+          addNode(dragState.kind, {
+            x: rect.x,
+            y: rect.y,
+            width: Math.max(150, rect.width),
+            height: Math.max(96, rect.height)
+          });
+        } else {
+          showToast("箱を作るには少し大きめにドラッグしてください。");
+        }
+      } else if (dragState?.type === "node" || dragState?.type === "resize" || dragState?.type === "pan" || dragState?.type === "divider") {
+        state.meta.updatedAt = new Date().toISOString();
+        if (dragState.type === "divider") render();
+      }
+      dragState = null;
+      window.removeEventListener("pointermove", handlePointerMove);
+    }
+
+    function updateAreaElements() {
+      Object.values(state.areas).forEach((area) => {
+        const el = app.querySelector(`.area.${area.kind}`);
+        if (!el) return;
+        el.style.left = `${area.x}px`;
+        el.style.top = `${area.y}px`;
+        el.style.width = `${area.width}px`;
+        el.style.height = `${area.height}px`;
+      });
+      const vertical = app.querySelector('[data-divider="vertical"]');
+      const horizontal = app.querySelector('[data-divider="horizontal"]');
+      if (vertical) {
+        const publicArea = state.areas.publicArea;
+        const adminArea = state.areas.adminArea;
+        vertical.style.left = `${adminArea.x - 20}px`;
+        vertical.style.top = `${Math.min(publicArea.y, adminArea.y) + 8}px`;
+        vertical.style.height = `${Math.max(publicArea.height, adminArea.height) - 16}px`;
+      }
+      if (horizontal) {
+        const dbArea = state.areas.dbArea;
+        horizontal.style.left = `${dbArea.x + 8}px`;
+        horizontal.style.top = `${dbArea.y - 20}px`;
+        horizontal.style.width = `${dbArea.width - 16}px`;
+      }
+    }
+
+    function updateNodeElement(node) {
+      const el = app.querySelector(`[data-node-id="${CSS.escape(node.id)}"]`);
+      if (!el) return;
+      el.style.left = `${node.x}px`;
+      el.style.top = `${node.y}px`;
+      el.style.width = `${node.width}px`;
+      el.style.height = `${node.height}px`;
+    }
+
+    function updateWorkspaceTransform() {
+      const workspace = app.querySelector(".workspace");
+      if (workspace) workspace.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+    }
+
+    function handleWheel(event) {
+      if (!event.ctrlKey && !event.metaKey) return;
+      event.preventDefault();
+      updateZoom(event.deltaY > 0 ? -0.05 : 0.05, false);
+    }
+
+    function updateZoom(delta, rerender = true) {
+      state.zoom = Math.min(1.6, Math.max(0.55, Math.round((state.zoom + delta) * 100) / 100));
+      if (rerender) render();
+      else {
+        updateWorkspaceTransform();
+        const value = app.querySelector(".zoom-value");
+        if (value) value.textContent = `${Math.round(state.zoom * 100)}%`;
+      }
+    }
+
+    function resetZoom() {
+      state.zoom = 1;
+      state.panX = 0;
+      state.panY = 0;
+      render();
+      showToast("100%表示に戻しました。");
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function autoArrange() {
+      pushHistory();
+      const areas = state.areas;
+      const arrangePageArea = (areaKind) => {
+        const area = areas[areaKind];
+        const nodes = state.nodes.filter((node) => node.areaKind === areaKind && (node.stageVisibleFrom || 1) <= state.stage);
+        nodes.forEach((node, index) => {
+          const col = index % 3;
+          const row = Math.floor(index / 3);
+          node.x = area.x + 58 + col * 255;
+          node.y = area.y + 88 + row * 148;
+          node.width = 238;
+          node.height = node.kind === "modal" || node.kind === "popup" ? 122 : 128;
+        });
+      };
+      arrangePageArea("publicArea");
+      if (state.stage >= 2) arrangePageArea("adminArea");
+      if (state.stage >= 3) {
+        const dbArea = areas.dbArea;
+        const saveNodes = state.nodes.filter((node) => node.kind === "saveData" && (node.stageVisibleFrom || 1) <= state.stage);
+        const referenceNodes = state.nodes.filter((node) => node.kind === "referenceData" && (node.stageVisibleFrom || 1) <= state.stage);
+        saveNodes.forEach((node, index) => {
+          node.x = dbArea.x + 58 + index * 178;
+          node.y = dbArea.y + 170;
+          node.width = 162;
+          node.height = 174;
+        });
+        referenceNodes.forEach((node, index) => {
+          node.x = dbArea.x + dbArea.width / 2 + 58 + index * 178;
+          node.y = dbArea.y + 170;
+          node.width = 162;
+          node.height = 174;
+        });
+      }
+      render();
+      showToast("全体を整列しました。");
+    }
+
+    function canvasPoint(event) {
+      const viewport = app.querySelector("[data-canvas]");
+      const rect = viewport.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left - state.panX) / state.zoom,
+        y: (event.clientY - rect.top - state.panY) / state.zoom
+      };
+    }
+
+    function normalizeRect(x1, y1, x2, y2) {
+      return {
+        x: Math.min(x1, x2),
+        y: Math.min(y1, y2),
+        width: Math.abs(x2 - x1),
+        height: Math.abs(y2 - y1)
+      };
+    }
+
+    function createDrawPreview(x, y, width, height) {
+      let preview = app.querySelector(".draw-preview");
+      if (!preview) {
+        preview = document.createElement("div");
+        preview.className = "draw-preview";
+        app.querySelector(".workspace")?.appendChild(preview);
+      }
+      preview.style.left = `${x}px`;
+      preview.style.top = `${y}px`;
+      preview.style.width = `${width}px`;
+      preview.style.height = `${height}px`;
+    }
+
+    function removeDrawPreview() {
+      app.querySelector(".draw-preview")?.remove();
+    }
+
+    function editProjectName() {
+      const name = window.prompt("プロジェクト名を入力してください。", state.projectName || "");
+      if (name === null) return;
+      pushHistory();
+      state.projectName = name.trim();
+      render();
+    }
+
+    function saveJson() {
+      state.meta.updatedAt = new Date().toISOString();
+      const data = stripRuntimeState(state);
+      downloadText(`${safeFileName(state.projectName || "relation-map")}.json`, JSON.stringify(data, null, 2), "application/json");
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (error) {
+        // localStorage may be unavailable in restricted local contexts.
+      }
+      showToast("JSONを書き出しました。");
+    }
+
+    function downloadText(fileName, text, type = "text/plain") {
+      const blob = new Blob([text], { type: `${type};charset=utf-8` });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function safeFileName(value) {
+      return String(value || "relation-map").replace(/[\\/:*?"<>|]+/g, "-").slice(0, 80);
+    }
+
+    fileInput.addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        pushHistory();
+        state = normalizeState(parsed);
+        state.screen = "editor";
+        render();
+        showToast("保存データを読み込みました。");
+      } catch (error) {
+        showToast("JSONを読み込めませんでした。ファイル内容を確認してください。");
+      } finally {
+        fileInput.value = "";
+      }
+    });
+
+    function generatePrompt() {
+      state.aiInput = app.querySelector("[data-action='ai-input']")?.value || state.aiInput || "";
+      const mode = state.aiMode || "consult";
+      const template = selectPromptTemplate(mode);
+      const prompt = template
+        .replaceAll("{{SERIALIZED_STATE}}", serializeForAi())
+        .replaceAll("{{USER_INPUT}}", state.aiInput || "未入力");
+      state.aiOutput = prompt;
+      lastGeneratedPrompt = prompt;
+      render();
+      showToast("AI用プロンプトを生成しました。");
+    }
+
+    function selectPromptTemplate(mode) {
+      if (mode === "final") return promptTemplates.finalOutput;
+      if (mode === "scaffold") return promptTemplates[`step${state.stage}Scaffold`];
+      return promptTemplates[`step${state.stage}Consult`];
+    }
+
+    function serializeForAi() {
+      const lines = [];
+      lines.push("[APP]");
+      lines.push(`name: ${APP_NAME}`);
+      lines.push(`stage: STEP${state.stage} ${STAGE_NAMES[state.stage]}`);
+      lines.push(`screen: ${state.screen}`);
+      lines.push(`project_name: ${state.projectName || "未設定"}`);
+      lines.push(`user_level: ${state.userLevel}`);
+      lines.push(`view_mode: ${state.viewMode}`);
+      lines.push("");
+      lines.push("[AREAS]");
+      Object.values(state.areas).forEach((area) => {
+        lines.push(`- ${area.id}: ${area.title} (${area.x},${area.y},${area.width},${area.height})`);
+      });
+      lines.push("");
+      lines.push("[NODES]");
+      getVisibleNodes().forEach((node) => {
+        lines.push(`- id: ${node.id}`);
+        lines.push(`  kind: ${node.kind}`);
+        lines.push(`  area_kind: ${node.areaKind}`);
+        lines.push(`  name: ${node.name}`);
+        if (isPageKind(node.kind)) {
+          lines.push(`  html_file: ${node.htmlFile || "未設定"}`);
+          lines.push(`  title: ${node.title || "未設定"}`);
+          lines.push(`  description: ${node.description || "未設定"}`);
+          lines.push(`  linked_parent_id: ${node.linkedParentId || "null"}`);
+          lines.push("  css_items:");
+          (node.cssItems || []).forEach((item) => lines.push(`    - ${item.fileName} | ${item.label} | ${item.role} | ${item.scope}`));
+          if (!node.cssItems?.length) lines.push("    - CSS未登録");
+          lines.push("  js_items:");
+          (node.jsItems || []).forEach((item) => lines.push(`    - ${item.fileName} | ${item.label} | ${item.role} | ${item.scope}`));
+          if (!node.jsItems?.length) lines.push("    - JS未登録");
+          lines.push("  links:");
+          getEdgesFrom(node.id).forEach((edge) => lines.push(`    - ${edge.label} -> ${edge.toId}`));
+          if (!getEdgesFrom(node.id).length) lines.push("    - なし");
+          lines.push(`  notes: ${node.notes || "なし"}`);
+        } else {
+          lines.push(`  table_name: ${node.tableName || "未設定"}`);
+          lines.push(`  description: ${node.description || "未設定"}`);
+          lines.push(`  fields: ${(node.fields || []).join(", ") || "未設定"}`);
+        }
+      });
+      lines.push("");
+      lines.push("[EDGES]");
+      getVisibleEdges().forEach((edge) => {
+        lines.push(`- ${edge.id} | ${edge.relationType} | ${edge.fromId} -> ${edge.toId} | ${edge.label || ""}`);
+      });
+      if (!getVisibleEdges().length) lines.push("- なし");
+      lines.push("");
+      lines.push("[WARNINGS]");
+      const warnings = getWarnings();
+      if (warnings.length) warnings.forEach((warning) => lines.push(`- ${warning}`));
+      else lines.push("- なし");
+      lines.push("");
+      lines.push("[RAW_JSON]");
+      lines.push(JSON.stringify(stripRuntimeState(state), null, 2));
+      return lines.join("\n");
+    }
+
+    async function copyPrompt() {
+      const text = lastGeneratedPrompt || state.aiOutput;
+      if (!text) return showToast("コピーするプロンプトがありません。");
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("プロンプトをコピーしました。");
+      } catch (error) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showToast("プロンプトをコピーしました。");
+      }
+    }
+
+    function downloadPrompt() {
+      const text = lastGeneratedPrompt || state.aiOutput;
+      if (!text) return showToast("保存するプロンプトがありません。");
+      downloadText(`${safeFileName(state.projectName || "ai-prompt")}-prompt.txt`, text, "text/plain");
+      showToast("プロンプトをtxt保存しました。");
+    }
+
+    function openHelpModal() {
+      openModal("ヘルプ / 使い方", `
+        <h3>基本の流れ</h3>
+        <ul>
+          <li>STEP1では公開ページ、モーダル、ポップアップ、ページ導線、CSS / JSを整理します。</li>
+          <li>STEP2では管理ページと管理側の導線、CSS / JSを追加します。</li>
+          <li>STEP3では保存データ、参照データ、DB接続を追加します。</li>
+        </ul>
+        <h3>操作</h3>
+        <ul>
+          <li>要素はドラッグで移動でき、右下のつまみでサイズ変更できます。</li>
+          <li>接続線モードを選び、始点と終点を順にクリックすると導線を追加できます。</li>
+          <li>右パネルで名前、htmlファイル名、CSS、JS、DB項目、メモを編集できます。</li>
+          <li>保存はJSONとして書き出され、読み込みから再開できます。</li>
+        </ul>
+        <h3>ショートカット</h3>
+        <ul>
+          <li>Ctrl / Cmd + S: 保存</li>
+          <li>Ctrl / Cmd + O: 読み込み</li>
+          <li>Ctrl / Cmd + Z: Undo</li>
+          <li>Ctrl / Cmd + Shift + Z: Redo</li>
+          <li>Delete: 選択中削除</li>
+          <li>Escape: 接続モード解除</li>
+        </ul>
+      `);
+    }
+
+    function openSamplesModal() {
+      openModal("サンプルから始める", `
+        <div class="sample-grid">
+          <button class="sample-card" data-sample="corporate">
+            <h3>コーポレートサイト</h3>
+            <p>トップ、一覧、詳細、問い合わせ、管理、DB接続まで揃った標準サンプルです。</p>
+          </button>
+          <button class="sample-card" data-sample="article">
+            <h3>記事一覧 + 詳細 + 問い合わせ</h3>
+            <p>公開ページ中心に記事導線と問い合わせ導線を整理したサンプルです。</p>
+          </button>
+          <button class="sample-card" data-sample="cms">
+            <h3>お知らせ更新付き簡易CMS</h3>
+            <p>お知らせの更新・公開管理・参照データを含むサンプルです。</p>
+          </button>
+        </div>
+      `, (modal) => {
+        modal.querySelectorAll("[data-sample]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state = createSampleData(3, button.dataset.sample);
+            historyStack = [];
+            futureStack = [];
+            closeModal();
+            render();
+            showToast("サンプルを読み込みました。");
+          });
+        });
+      });
+    }
+
+    function openModal(title, body, afterRender) {
+      closeModal();
+      const modal = document.createElement("div");
+      modal.className = "modal-backdrop";
+      modal.innerHTML = `
+        <div class="modal-box" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+          <div class="modal-head">
+            <h2>${escapeHtml(title)}</h2>
+            <button class="btn small" data-close-modal>閉じる</button>
+          </div>
+          <div class="modal-body">${body}</div>
+        </div>
+      `;
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal || event.target.closest("[data-close-modal]")) closeModal();
+      });
+      document.body.appendChild(modal);
+      currentModal = modal;
+      afterRender?.(modal);
+    }
+
+    function closeModal() {
+      currentModal?.remove();
+      currentModal = null;
+    }
+
+    function createSampleData(stage = 3, type = "corporate") {
+      const sample = createBaseState(stage);
+      sample.projectName = type === "article" ? "記事サイト" : type === "cms" ? "簡易CMS" : "サンプルサイト";
+      const nodes = [];
+      const edges = [];
+      const n = (node) => {
+        const normalized = normalizeNode(node);
+        nodes.push(normalized);
+        return normalized.id;
+      };
+      const e = (fromId, toId, relationType, label, description = "") => {
+        edges.push({ id: uid("edge"), fromId, toId, relationType, label, description });
+      };
+
+      const top = n(pageNode("node_top", "publicPage", "publicArea", "トップページ", "index.html", "サイトのメインとなるトップページです。", 215, 88, ["common.css", "index.css"], ["common.js", "index.js"], 1));
+      const list = n(pageNode("node_list", "publicPage", "publicArea", "一覧ページ", "list.html", "記事や商品などの一覧を表示するページです。", 78, 238, ["common.css", "list.css"], ["common.js", "list.js"], 1));
+      const detail = n(pageNode("node_detail", "publicPage", "publicArea", "詳細ページ", "detail.html", "選択したアイテムの詳細を表示するページです。", 372, 238, ["common.css", "detail.css"], ["common.js", "detail.js"], 1));
+      const contact = n(pageNode("node_contact_modal", "modal", "publicArea", "問い合わせモーダル", "contact-modal.html", "問い合わせフォームをモーダルで表示します。", 275, 355, ["common.css", "modal.css"], ["common.js", "modal.js"], 1, top));
+      e(top, list, "navigate", "一覧へ");
+      e(top, detail, "navigate", "注目詳細へ");
+      e(list, detail, "navigate", "詳細へ");
+      e(detail, contact, "navigate", "問い合わせ");
+
+      if (stage >= 2) {
+        const adminTop = n(pageNode("node_admin_top", "adminPage", "adminArea", "管理トップ", "admin/index.html", "管理画面のダッシュボードです。", 890, 78, ["admin.css"], ["admin.js"], 2));
+        const adminList = n(pageNode("node_admin_list", "adminPage", "adminArea", "一覧管理ページ", "admin/list.html", "データの一覧・検索・絞り込みを行います。", 792, 236, ["admin.css"], ["list-admin.js"], 2));
+        const adminEdit = n(pageNode("node_admin_edit", "adminPage", "adminArea", "編集ページ", "admin/edit.html", "データの新規作成・編集を行うページです。", 1104, 236, ["admin.css", "edit.css"], ["edit.js", "common.js"], 2));
+        const editModal = n(pageNode("node_edit_modal", "modal", "adminArea", "編集モーダル", "admin/edit-modal.html", "編集フォームをモーダルで表示します。", 822, 358, ["admin.css", "modal.css"], ["modal.js"], 2, adminEdit));
+        e(adminTop, adminList, "navigate", "一覧管理へ");
+        e(adminTop, adminEdit, "navigate", "新規作成へ");
+        e(adminList, adminEdit, "navigate", "編集へ");
+        e(adminEdit, editModal, "navigate", "編集モーダル");
+        e(detail, adminTop, "navigate", "管理で確認");
+      }
+
+      if (stage >= 3) {
+        const saveContact = n(dbNode("db_contact", "saveData", "お問い合わせ", "contacts", "問い合わせフォームから登録されるデータです。", 80, 614, ["id", "name", "email", "message", "created_at"]));
+        const saveArticle = n(dbNode("db_articles", "saveData", "記事データ", "articles", "記事本文や画像を保持します。", 260, 614, ["id", "title", "slug", "content", "image", "created_at"]));
+        const saveUser = n(dbNode("db_users", "saveData", "ユーザー情報", "users", "管理者や投稿者の情報です。", 440, 614, ["id", "name", "email", "password", "role"]));
+        const refNews = n(dbNode("db_news", "referenceData", "お知らせ", "notices", "トップページで参照するお知らせです。", 760, 614, ["id", "title", "content", "start_at", "end_at"]));
+        const refArticle = n(dbNode("db_article_list", "referenceData", "記事一覧", "article_list", "一覧ページで参照する記事データです。", 940, 614, ["id", "title", "summary", "image", "published_at"]));
+        const refSettings = n(dbNode("db_settings", "referenceData", "設定", "settings", "サイト設定や表示条件です。", 1120, 614, ["key", "value", "type", "updated_at"]));
+        e(contact, saveContact, "save", "問い合わせ保存");
+        e("node_admin_edit", saveArticle, "save", "記事保存");
+        e("node_edit_modal", saveArticle, "save", "モーダル保存");
+        e("node_admin_edit", saveUser, "save", "ユーザー更新");
+        e(refNews, top, "reference", "お知らせ表示");
+        e(refArticle, list, "reference", "一覧表示");
+        e(refArticle, detail, "reference", "詳細表示");
+        e(refSettings, top, "reference", "設定読込");
+        e(refSettings, "node_admin_top", "reference", "管理設定");
+      }
+
+      if (type === "article") {
+        sample.projectName = "記事サイト";
+        const search = n(pageNode("node_search", "publicPage", "publicArea", "検索ページ", "search.html", "記事を検索するページです。", 520, 92, ["common.css", "search.css"], ["common.js", "search.js"], 1));
+        e(top, search, "navigate", "検索へ");
+        e(search, detail, "navigate", "検索結果から詳細へ");
+      }
+
+      if (type === "cms") {
+        sample.projectName = "お知らせ更新付き簡易CMS";
+        if (stage < 2) sample.stage = 2;
+        const newsAdmin = n(pageNode("node_news_admin", "adminPage", "adminArea", "お知らせ更新", "admin/news.html", "お知らせの作成・更新を行います。", 1010, 360, ["admin.css"], ["news-admin.js"], 2));
+        e("node_admin_top", newsAdmin, "navigate", "お知らせ更新へ");
+      }
+
+      sample.nodes = nodes.filter((node) => (node.stageVisibleFrom || 1) <= stage);
+      sample.edges = edges.filter((edge) => sample.nodes.some((node) => node.id === edge.fromId) && sample.nodes.some((node) => node.id === edge.toId));
+      return normalizeState(sample);
+    }
+
+    function pageNode(id, kind, areaKind, name, htmlFile, description, x, y, cssFiles, jsFiles, stageVisibleFrom, linkedParentId = "") {
+      return {
+        id,
+        kind,
+        areaKind,
+        linkedParentId,
+        name,
+        htmlFile,
+        title: name,
+        description,
+        notes: "",
+        x,
+        y,
+        width: 250,
+        height: kind === "modal" ? 122 : 128,
+        cssItems: cssFiles.map((fileName, index) => ({ id: uid("css"), kind: "css", fileName, label: index === 0 ? "共通CSS" : "個別CSS", role: name, scope: index === 0 ? "common" : "specific" })),
+        jsItems: jsFiles.map((fileName, index) => ({ id: uid("js"), kind: "js", fileName, label: index === 0 ? "共通JS" : "個別JS", role: name, scope: index === 0 ? "common" : "specific" })),
+        linkHints: [],
+        dbHints: [],
+        stageVisibleFrom
+      };
+    }
+
+    function dbNode(id, kind, name, tableName, description, x, y, fields) {
+      return {
+        id,
+        kind,
+        areaKind: "dbArea",
+        name,
+        tableName,
+        title: name,
+        description,
+        notes: "",
+        x,
+        y,
+        width: 162,
+        height: 174,
+        fields,
+        stageVisibleFrom: 3
+      };
+    }
+
+    document.addEventListener("keydown", (event) => {
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      const mod = isMac ? event.metaKey : event.ctrlKey;
+      if (mod && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        if (state.screen === "editor") saveJson();
+      } else if (mod && event.key.toLowerCase() === "o") {
+        event.preventDefault();
+        fileInput.click();
+      } else if (mod && event.key.toLowerCase() === "z" && event.shiftKey) {
+        event.preventDefault();
+        redo();
+      } else if (mod && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        undo();
+      } else if (event.key === "Delete" && state.screen === "editor") {
+        deleteSelected();
+      } else if (event.key === "Escape" && state.screen === "editor") {
+        state.connectMode = false;
+        state.connectFromId = null;
+        state.drawKind = null;
+        render();
+      } else if (mod && event.key.toLowerCase() === "c" && state.selectedId) {
+        const node = getNode(state.selectedId);
+        if (node) clipboardNode = deepClone(node);
+      } else if (mod && event.key.toLowerCase() === "v" && clipboardNode) {
+        event.preventDefault();
+        pushHistory();
+        const copy = deepClone(clipboardNode);
+        copy.id = uid(copy.kind === "saveData" || copy.kind === "referenceData" ? "db" : "node");
+        copy.x += 40;
+        copy.y += 40;
+        copy.name = `${copy.name} コピー`;
+        state.nodes.push(copy);
+        state.selectedId = copy.id;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
